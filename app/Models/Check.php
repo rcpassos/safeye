@@ -18,7 +18,7 @@ class Check extends Model
      */
     protected $fillable = [
         'group_id',
-        'team_id',
+        'user_id',
         'name',
         'type',
         'endpoint',
@@ -41,9 +41,9 @@ class Check extends Model
         'last_run_at' => 'datetime',
     ];
 
-    public function team(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Team::class);
+        return $this->belongsTo(User::class);
     }
 
     public function group(): BelongsTo

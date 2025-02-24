@@ -9,7 +9,6 @@ use App\Enums\HTTPMethod;
 use App\Filament\App\Resources\CheckResource\Pages;
 use App\Models\Check;
 use CodebarAg\FilamentJsonField\Forms\Components\JsonInput;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
@@ -20,6 +19,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 
 class CheckResource extends Resource
 {
@@ -44,13 +44,13 @@ class CheckResource extends Resource
                             ->maxLength(255),
                         Select::make('group_id')
                             ->relationship(name: 'group', titleAttribute: 'name')
-                            ->options(Filament::getTenant()->groups->pluck('name', 'id'))
+                            ->options(Auth::user()->groups->pluck('name', 'id'))
                             ->searchable()
                             ->preload()
                             ->createOptionForm([
                                 TextInput::make('name')
                                     ->required(),
-                                Hidden::make('team_id')->default(Filament::getTenant()->id),
+                                Hidden::make('user_id')->default(Auth::id()),
                             ]),
                     ]),
 

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\RequiresTenantSubscription;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {

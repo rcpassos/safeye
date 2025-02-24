@@ -10,11 +10,9 @@ use App\Models\Check;
 use App\Models\CheckHistory;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\TransferStats;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
 
 class RunCheck extends Command
 {
@@ -37,12 +35,7 @@ class RunCheck extends Command
      */
     public function handle()
     {
-        // Based: https://chatgpt.com/share/446815c5-f770-4027-90e9-79fa3aa8b34c
-
-        // Get all active checks and only for the teams that has the subscription active
-        $checks = Check::where('active', true)->whereHas('team', function ($query) {
-            $query->where('subscription_active', true);
-        })->get();
+        $checks = Check::where('active', true)->get();
 
         foreach ($checks as $check) {
             $lastChecked = $check->last_run_at;

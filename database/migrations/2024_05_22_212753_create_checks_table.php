@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('group_id')
                 ->nullable()
                 ->constrained();
-            $table->foreignId('team_id')
+            $table->foreignId('user_id')
                 ->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->enum('type', CheckType::values())->default(CheckType::HTTP->value);

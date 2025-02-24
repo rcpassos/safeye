@@ -14,7 +14,7 @@ class Group extends Model
      * @var array
      */
     protected $fillable = [
-        'team_id',
+        'user_id',
         'name',
     ];
 
@@ -23,8 +23,8 @@ class Group extends Model
         return $this->hasMany(Check::class);
     }
 
-    public function team(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Team::class);
+        return $this->belongsTo(User::class);
     }
 }
