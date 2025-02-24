@@ -2,9 +2,9 @@
 
 ## Tech Stask
 
--   Laravel
--   Filament
--   TailwindCSS
+-   Laravel v11
+-   Filament v3
+-   TailwindCSS v3
 
 ## Getting Started
 
@@ -44,7 +44,7 @@ For Unix
 10. Access `http://safeye.test:8000/`
 
 For Windows
-Pre-Requisites (php 8.2.x)
+Pre-Requisites (php 8.3.x)
 (error can appear on php.ini, some extensions could be commented)
 
 1. `composer install`
@@ -67,11 +67,3 @@ Pre-Requisites (php 8.2.x)
 6. `composer global update` -> to update the composer dependencies
 7. `composer install` -> to install the dependencies
 8. `npm run dev` -> keep this running
-9. `php artisan serve`
-
-## Important Links
-
--   https://www.youtube.com/watch?v=ag7HXbgJtuk
--   https://github.com/marclou/stripe-sub
--   https://github.com/stripe/stripe-php
--   https://docs.stripe.com/api
