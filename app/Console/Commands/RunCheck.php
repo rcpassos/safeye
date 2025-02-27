@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Enums\AssertionSign;
@@ -14,7 +16,7 @@ use GuzzleHttp\TransferStats;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
-class RunCheck extends Command
+final class RunCheck extends Command
 {
     /**
      * The name and signature of the console command.
@@ -33,7 +35,7 @@ class RunCheck extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $checks = Check::where('active', true)->get();
 
@@ -47,22 +49,22 @@ class RunCheck extends Command
         }
     }
 
-    protected function doTheCheck(Check $check)
+    private function doTheCheck(Check $check): void
     {
         $client = new Client([
-            'timeout' => $check->request_timeouts,
+            'timeout' => $check->request_timeout,
         ]);
 
         $client->requestAsync($check->http_method->value, $check->endpoint, [
             'headers' => $check->request_headers,
             'body' => $check->request_body,
-            'on_stats' => function (TransferStats $stats) use ($check) {
+            'on_stats' => function (TransferStats $stats) use ($check): void {
                 $this->handleRequestStats($stats, $check);
             },
         ])->wait(); // TODO: maybe we don't need to wait
     }
 
-    protected function handleRequestStats(TransferStats $stats, Check $check)
+    private function handleRequestStats(TransferStats $stats, Check $check): void
     {
         $metadata = [
             'transfer_time' => $stats->getTransferTime(),
@@ -84,7 +86,7 @@ class RunCheck extends Command
                             rootCause: $assertion->attributesToArray(),
                             type: ($stats->getTransferTime() < $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
                         );
-                    } else if ($assertion->type === AssertionType::RESPONSE_CODE && $stats->getResponse()->getStatusCode() >= $assertion->value) {
+                    } elseif ($assertion->type === AssertionType::RESPONSE_CODE && $stats->getResponse()->getStatusCode() >= $assertion->value) {
                         $this->saveHistory(
                             check: $check,
                             metadata: $metadata,
@@ -102,7 +104,7 @@ class RunCheck extends Command
                             rootCause: $assertion->attributesToArray(),
                             type: ($stats->getTransferTime() <= $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
                         );
-                    } else if ($assertion->type === AssertionType::RESPONSE_CODE && $stats->getResponse()->getStatusCode() > $assertion->value) {
+                    } elseif ($assertion->type === AssertionType::RESPONSE_CODE && $stats->getResponse()->getStatusCode() > $assertion->value) {
                         $this->saveHistory(
                             check: $check,
                             metadata: $metadata,
@@ -118,14 +120,14 @@ class RunCheck extends Command
                             check: $check,
                             metadata: $metadata,
                             rootCause: $assertion->attributesToArray(),
-                            type: ($stats->getTransferTime() == $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
+                            type: ($stats->getTransferTime() !== null && (string) $stats->getTransferTime() === $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
                         );
-                    } else if ($assertion->type === AssertionType::RESPONSE_CODE && $stats->getResponse()->getStatusCode() != $assertion->value) {
+                    } elseif ($assertion->type === AssertionType::RESPONSE_CODE && (string) $stats->getResponse()->getStatusCode() !== $assertion->value) {
                         $this->saveHistory(
                             check: $check,
                             metadata: $metadata,
                             rootCause: $assertion->attributesToArray(),
-                            type: ($stats->getResponse()->getStatusCode() == $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
+                            type: ($stats->getResponse()?->getStatusCode() !== null && (string) $stats->getResponse()->getStatusCode() === $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
                         );
                     }
                     break;
@@ -136,14 +138,14 @@ class RunCheck extends Command
                             check: $check,
                             metadata: $metadata,
                             rootCause: $assertion->attributesToArray(),
-                            type: ($stats->getTransferTime() != $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
+                            type: ($stats->getTransferTime() !== null && (string) $stats->getTransferTime() === $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
                         );
-                    } else if ($assertion->type === AssertionType::RESPONSE_CODE && $stats->getResponse()->getStatusCode() == $assertion->value) {
+                    } elseif ($assertion->type === AssertionType::RESPONSE_CODE && (string) $stats->getResponse()->getStatusCode() === $assertion->value) {
                         $this->saveHistory(
                             check: $check,
                             metadata: $metadata,
                             rootCause: $assertion->attributesToArray(),
-                            type: ($stats->getResponse()->getStatusCode() != $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
+                            type: ($stats->getResponse()?->getStatusCode() !== null && (string) $stats->getResponse()->getStatusCode() === $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
                         );
                     }
                     break;
@@ -154,9 +156,9 @@ class RunCheck extends Command
                             check: $check,
                             metadata: $metadata,
                             rootCause: $assertion->attributesToArray(),
-                            type: ($stats->getTransferTime() > $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
+                            type: ($stats->getTransferTime() !== null && (string) $stats->getTransferTime() === $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
                         );
-                    } else if ($assertion->type === AssertionType::RESPONSE_CODE && $stats->getResponse()->getStatusCode() <= $assertion->value) {
+                    } elseif ($assertion->type === AssertionType::RESPONSE_CODE && $stats->getResponse()->getStatusCode() <= $assertion->value) {
                         $this->saveHistory(
                             check: $check,
                             metadata: $metadata,
@@ -172,9 +174,9 @@ class RunCheck extends Command
                             check: $check,
                             metadata: $metadata,
                             rootCause: $assertion->attributesToArray(),
-                            type: ($stats->getTransferTime() >= $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
+                            type: ($stats->getTransferTime() !== null && (string) $stats->getTransferTime() === $assertion->value) ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
                         );
-                    } else if ($assertion->type === AssertionType::RESPONSE_CODE && $stats->getResponse()->getStatusCode() < $assertion->value) {
+                    } elseif ($assertion->type === AssertionType::RESPONSE_CODE && $stats->getResponse()->getStatusCode() < $assertion->value) {
                         $this->saveHistory(
                             check: $check,
                             metadata: $metadata,
@@ -198,10 +200,10 @@ class RunCheck extends Command
         $check->save();
     }
 
-    protected function saveHistory(Check $check, array $metadata, array $rootCause, CheckHistoryType $type)
+    private function saveHistory(Check $check, array $metadata, array $rootCause, CheckHistoryType $type): void
     {
         // TODO: The history needs to be cleared after some time, maybe a cronjob to clear the history time to time based on the subscription plan (retention time)
-        $history = new CheckHistory();
+        $history = new CheckHistory;
         $history->check_id = $check->id;
         $history->metadata = $metadata;
         $history->root_cause = $rootCause;
@@ -211,14 +213,13 @@ class RunCheck extends Command
 
         if (
             $type === CheckHistoryType::ERROR &&
-            $check->notify_emails &&
-            $check->notify_emails !== ''
+            ! empty($check->notify_emails)
         ) {
             $this->notifyEmails(preg_split("/\r\n|\r|\n/", $check->notify_emails), $history);
         }
     }
 
-    protected function notifyEmails(array $emails, CheckHistory $checkHistory)
+    private function notifyEmails(array $emails, CheckHistory $checkHistory): void
     {
         Mail::to($emails)->send(new NotifyCheckIncident($checkHistory));
     }

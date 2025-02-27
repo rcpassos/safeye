@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\App\Resources;
 
 use App\Enums\AssertionSign;
@@ -21,7 +23,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 
-class CheckResource extends Resource
+final class CheckResource extends Resource
 {
     protected static ?string $model = Check::class;
 

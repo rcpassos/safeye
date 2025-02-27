@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 trait ExtraMethods
@@ -28,18 +30,16 @@ trait ExtraMethods
         $names = self::names();
         $values = self::values();
 
-        $labels = array_map(function (string $name) use ($prefix) {
-            return __($prefix . '.' . strtolower($name));
-        }, $names);
+        $labels = array_map(fn (string $name) => __($prefix.'.'.mb_strtolower($name)), $names);
 
         return array_combine($values, $labels);
     }
 
-    public static function getTranslationFromValue($value, $prefix): ?string
+    public static function getTranslationFromValue($value, string $prefix): ?string
     {
         foreach (self::cases() as $case) {
-            if ($case->value == $value) {
-                return __($prefix . '.' . strtolower($case->name));
+            if ($case->value === $value) {
+                return __($prefix.'.'.mb_strtolower((string) $case->name));
             }
         }
 

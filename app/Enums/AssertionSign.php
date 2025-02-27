@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
@@ -15,7 +17,7 @@ enum AssertionSign: string implements HasLabel
     case GREATER_THAN = '>';
     case GREATER_THAN_OR_EQUAL_TO = '>=';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return $this->value;
     }

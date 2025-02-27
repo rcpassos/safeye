@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\App\Resources\CheckResource\Pages;
 
 use App\Enums\CheckHistoryType;
 use App\Filament\App\Resources\CheckResource;
 use App\Filament\App\Resources\CheckResource\Widgets\CheckStats;
+use App\Models\Check;
 use CodebarAg\FilamentJsonField\Infolists\Components\JsonEntry;
 use Filament\Actions;
 use Filament\Infolists\Components\Grid;
@@ -15,22 +18,28 @@ use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
-use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\HtmlString;
 
-class ViewCheck extends ViewRecord
+final class ViewCheck extends ViewRecord
 {
     protected static string $resource = CheckResource::class;
 
-    public function getHeading(): string | Htmlable
+    public function getHeading(): string
     {
-        return $this->getRecord()->name;
+        /** @var Check $check */
+        $check = $this->getRecord();
+
+        return $check->name;
     }
 
-    public function getSubheading(): string | Htmlable | null
+    public function getSubheading(): string
     {
-        $httpMethod = $this->getRecord()->http_method->value;
-        $endpoint = $this->getRecord()->endpoint;
+        /** @var Check $check */
+        $check = $this->getRecord();
+
+        $httpMethod = $check->http_method->value;
+        $endpoint = $check->endpoint;
+
         return "$httpMethod $endpoint";
     }
 
@@ -50,7 +59,7 @@ class ViewCheck extends ViewRecord
                                     TextEntry::make('type')
                                         ->label('Status')
                                         ->badge()
-                                        ->color(fn(CheckHistoryType $state): string => match ($state) {
+                                        ->color(fn (CheckHistoryType $state): string => match ($state) {
                                             CheckHistoryType::SUCCESS => 'success',
                                             CheckHistoryType::ERROR => 'danger',
                                         }),
@@ -63,7 +72,7 @@ class ViewCheck extends ViewRecord
                                         ->foldingCode(true)
                                         ->foldedCode(true),
                                 ])
-                                ->columns(3)
+                                ->columns(3),
                         ])->heading('Latest Activity'),
                         Section::make([
                             RepeatableEntry::make('latestIssues')
@@ -88,21 +97,21 @@ class ViewCheck extends ViewRecord
                                         ->foldingCode(true)
                                         ->foldedCode(true),
                                 ])
-                                ->columns(3)
+                                ->columns(3),
                         ])->heading('Latest Issues')
                             ->description('Issues that have been reported in the last 24 hours'),
                     ]),
                     Section::make([
                         TextEntry::make('endpoint')
                             ->label('Request')
-                            ->formatStateUsing(fn(): string => $this->getSubheading()),
+                            ->formatStateUsing(fn (): string => $this->getSubheading()),
                         Grid::make([])->schema([
                             TextEntry::make('interval')
-                                ->formatStateUsing(fn(string $state): string => "Every {$state} seconds"),
+                                ->formatStateUsing(fn (string $state): string => "Every {$state} seconds"),
                             TextEntry::make('type'),
                         ])->columns(2),
                         TextEntry::make('request_timeout')
-                            ->formatStateUsing(fn(string $state): string => "{$state} seconds"),
+                            ->formatStateUsing(fn (string $state): string => "{$state} seconds"),
                         KeyValueEntry::make('request_headers'),
                         JsonEntry::make('request_body')
                             ->key('request_body')
@@ -121,12 +130,12 @@ class ViewCheck extends ViewRecord
                             ])
                             ->columns(3),
                         TextEntry::make('notify_emails')
-                            ->formatStateUsing(fn(string $state): HtmlString => new HtmlString(implode('<br>', preg_split("/\r\n|\r|\n/", $state)))),
-                        TextEntry::make('created_at')
+                            ->formatStateUsing(fn (string $state): HtmlString => new HtmlString(implode('<br>', preg_split("/\r\n|\r|\n/", $state)))),
+                        TextEntry::make('created_at'),
                     ])
                         ->heading('Details')
                         ->grow(false),
-                ])->columnSpan('full')->from('md')
+                ])->columnSpan('full')->from('md'),
             ]
         );
     }

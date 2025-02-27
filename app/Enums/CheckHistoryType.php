@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
@@ -11,7 +13,7 @@ enum CheckHistoryType: string implements HasLabel
     case SUCCESS = 'success';
     case ERROR = 'error';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return $this->value;
     }

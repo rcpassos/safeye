@@ -1,17 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mail;
 
 use App\Models\CheckHistory;
 use Filament\Facades\Filament;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class NotifyCheckIncident extends Mailable
+final class NotifyCheckIncident extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -29,7 +30,7 @@ class NotifyCheckIncident extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Safeye found an incident in your check ' . $this->checkHistory->check->name,
+            subject: 'Safeye found an incident in your check '.$this->checkHistory->check->name,
         );
     }
 

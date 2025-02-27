@@ -17,11 +17,13 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
         "phpunit/phpunit": "^11.0.1",
+        "rector/rector": "^2.0",
         "spatie/laravel-ignition": "^2.4"
     },
     "autoload": {
@@ -52,6 +54,16 @@
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
+        ],
+        "lint": "pint",
+        "refactor": "rector",
+        "test:lint": "pint --test",
+        "test:types": "phpstan",
+        "test:refactor": "rector --dry-run",
+        "test": [
+            "@test:lint",
+            "@test:types",
+            "@test:refactor"
         ]
     },
     "extra": {
