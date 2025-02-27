@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\App\Resources\CheckResource\Pages;
 
 use App\Filament\App\Resources\CheckResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditCheck extends EditRecord
+final class EditCheck extends EditRecord
 {
     protected static string $resource = CheckResource::class;
 

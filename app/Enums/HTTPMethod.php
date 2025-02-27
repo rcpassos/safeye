@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
@@ -16,7 +18,7 @@ enum HTTPMethod: string implements HasLabel
     case OPTIONS = 'OPTIONS';
     case HEAD = 'HEAD';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return $this->name;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Console\Commands\RunCheck;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
@@ -8,7 +10,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__ . '/../routes/web.php',
+        web: __DIR__.'/../routes/web.php',
         // api: __DIR__ . '/../routes/api.php',
         // commands: __DIR__ . '/../routes/console.php',
         health: '/up',
@@ -20,6 +22,6 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withSchedule(function (Schedule $schedule) {
-        //$schedule->command(RunCheck::class)->everyMinute();
+        // $schedule->command(RunCheck::class)->everyMinute();
     })
     ->create();

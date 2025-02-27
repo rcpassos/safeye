@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\App\Resources\CheckResource\Widgets;
 
 use App\Enums\CheckHistoryType;
@@ -8,7 +10,7 @@ use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class CheckStats extends BaseWidget
+final class CheckStats extends BaseWidget
 {
     use InteractsWithRecord;
 
@@ -34,10 +36,10 @@ class CheckStats extends BaseWidget
                 ->color($lastCheckInfo ? ($lastCheckInfo->type === CheckHistoryType::ERROR ? 'danger' : 'success') : null)
                 ->description($lastCheckInfo?->created_at?->diffForHumans()),
 
-            Stat::make('UP TIME', $uptime ? $uptime . '%' : 'N/A')
+            Stat::make('UP TIME', $uptime ? $uptime.'%' : 'N/A')
                 ->description($uptime ? '24 Hours' : null),
 
-            Stat::make('PERFORMANCE', $performance ? $performance . 's' : 'N/A')
+            Stat::make('PERFORMANCE', $performance ? $performance.'s' : 'N/A')
                 ->description($performance ? '24 Hours' : null),
 
             Stat::make('CHECKS (ALERTS)', $check->latestChecks->count() > 0 ? "{$check->latestChecks->count()} ({$check->latestIssues->count()})" : 'N/A')

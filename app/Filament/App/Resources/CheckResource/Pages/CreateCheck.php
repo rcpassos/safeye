@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\App\Resources\CheckResource\Pages;
 
 use App\Filament\App\Resources\CheckResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 
-class CreateCheck extends CreateRecord
+final class CreateCheck extends CreateRecord
 {
     protected static string $resource = CheckResource::class;
 

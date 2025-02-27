@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use Illuminate\Support\Facades\App;
@@ -7,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -26,14 +28,14 @@ class AppServiceProvider extends ServiceProvider
         $this->configureUrl();
     }
 
-    private function configureCommands()
+    private function configureCommands(): void
     {
         DB::prohibitDestructiveCommands(
             App::isProduction()
         );
     }
 
-    private function configureUrl()
+    private function configureUrl(): void
     {
         // force https (for local developement, use -> valet secure <project-name>)
         if (config('app.env') !== 'local') {

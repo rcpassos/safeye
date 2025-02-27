@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\CheckType;
 use App\Enums\HTTPMethod;
 use Illuminate\Database\Migrations\Migration;

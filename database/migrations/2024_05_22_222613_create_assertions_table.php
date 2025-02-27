@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\AssertionSign;
 use App\Enums\AssertionType;
 use Illuminate\Database\Migrations\Migration;

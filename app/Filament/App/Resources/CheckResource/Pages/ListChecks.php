@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\App\Resources\CheckResource\Pages;
 
 use App\Filament\App\Resources\CheckResource;
@@ -16,16 +18,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class ListChecks extends ListRecords
+final class ListChecks extends ListRecords
 {
     protected static string $resource = CheckResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
 
     public function table(Table $table): Table
     {
@@ -46,7 +41,7 @@ class ListChecks extends ListRecords
                 ->suffix(' seconds')
                 ->sortable(),
             IconColumn::make('active')
-                ->boolean()
+                ->boolean(),
         ])->actions([
             ViewAction::make(),
             EditAction::make(),
@@ -69,8 +64,15 @@ class ListChecks extends ListRecords
         ];
     }
 
-    public function getDefaultActiveTab(): string | int | null
+    public function getDefaultActiveTab(): string
     {
         return 'active';
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\CreateAction::make(),
+        ];
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\CheckHistoryType;
@@ -9,12 +11,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Check extends Model
+final class Check extends Model
 {
     /**
      * Mass assigned properties.
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'group_id',
@@ -32,6 +34,11 @@ class Check extends Model
         'last_run_at',
     ];
 
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
     protected $casts = [
         'http_method' => HTTPMethod::class,
         'type' => CheckType::class,
@@ -41,26 +48,31 @@ class Check extends Model
         'last_run_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<Group, $this> */
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
     }
 
+    /** @return HasMany<Assertion, $this> */
     public function assertions(): HasMany
     {
         return $this->hasMany(Assertion::class);
     }
 
+    /** @return HasMany<CheckHistory, $this> */
     public function history(): HasMany
     {
         return $this->hasMany(CheckHistory::class);
     }
 
+    /** @return HasMany<CheckHistory, $this> */
     public function latestIssues(): HasMany
     {
         return $this->hasMany(CheckHistory::class)
@@ -70,6 +82,7 @@ class Check extends Model
             ->orderBy('created_at', 'desc');
     }
 
+    /** @return HasMany<CheckHistory, $this> */
     public function latestChecks(): HasMany
     {
         return $this->hasMany(CheckHistory::class)
