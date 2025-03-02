@@ -8,25 +8,13 @@
 
 ## Getting Started
 
-## Pre-requisites
-
--   [TablePlus](https://tableplus.com/) Database management tool or similar
--   [Docker Desktop](https://www.docker.com/products/docker-desktop/) installation
--   Setup .git/config user
-
-```
-[user]
-    name = "YOUR NAME"
-    email = "YOUR COMPANY EMAIL"
-```
-
--   Make APP_PORT=8000 in .env to avoid collisions with other services that use port 80 by default
--   config Laravel Sail shell alias https://laravel.com/docs/11.x/sail#configuring-a-shell-alias
--   copy .env.example to .env and ask for .env details
-
 ### Installation process
 
-### With Sail <- USE THIS
+### With Sail
+
+-   [Docker Desktop](https://www.docker.com/products/docker-desktop/) installation
+-   Make APP_PORT=8000 in .env to avoid collisions with other services that use port 80 by default
+-   config Laravel Sail shell alias https://laravel.com/docs/11.x/sail#configuring-a-shell-alias
 
 [Laravel Sail](https://laravel.com/docs/10.x/sail#introduction)
 
@@ -57,7 +45,7 @@ Pre-Requisites (php 8.3.x)
 8. `./sail npm install`
 9. `./sail npm run dev`
 
-### Without Sail
+### With Valet
 
 1. `nvm use 20` -> install nvm is needed
 2. `npm install`
