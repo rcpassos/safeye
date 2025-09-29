@@ -393,6 +393,51 @@ Assertions define what constitutes a successful check:
 -   **Recent Issues**: Quick access to problems in last 24 hours
 -   **Email Alerts**: Automatic notifications when checks fail
 
+### Check History Cleanup
+
+SafeEye includes an automated cleanup system to manage check history records:
+
+#### Configuration
+
+Configure history retention in your `.env` file:
+
+```env
+# Number of days to keep check history (default: 30)
+CHECK_HISTORY_RETENTION_DAYS=30
+
+# Set to 0 or negative to disable automatic cleanup
+CHECK_HISTORY_RETENTION_DAYS=0
+```
+
+#### Automatic Cleanup
+
+-   **Scheduled Task**: Runs daily at midnight to clean old records
+-   **Configurable Retention**: Set retention period via environment variable
+-   **Safe Operation**: Only deletes records older than the specified period
+-   **Logging**: Command provides feedback on cleanup operations
+
+#### Manual Cleanup
+
+You can manually run the cleanup command:
+
+```bash
+php artisan app:clear-old-check-history
+```
+
+The command will:
+
+-   Delete records older than the configured retention period
+-   Provide feedback on the number of records deleted
+-   Skip cleanup if retention is disabled (≤ 0 days)
+
+#### Setup Cron Job (Production)
+
+For production environments, ensure the Laravel scheduler is running:
+
+```bash
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
 ## Development Status
 
 ### ✅ Implemented Features

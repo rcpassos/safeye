@@ -23,5 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (Schedule $schedule) {
         // $schedule->command(RunCheck::class)->everyMinute();
+        $schedule->command('app:clear-old-check-history')
+            ->daily()
+            ->at('02:00');
     })
     ->create();

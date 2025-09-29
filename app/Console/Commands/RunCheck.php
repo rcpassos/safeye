@@ -61,7 +61,7 @@ final class RunCheck extends Command
             'on_stats' => function (TransferStats $stats) use ($check): void {
                 $this->handleRequestStats($stats, $check);
             },
-        ])->wait(); // TODO: maybe we don't need to wait
+        ])->wait(); // TODO: maybe we don't need to wait, need some tests
     }
 
     private function handleRequestStats(TransferStats $stats, Check $check): void
@@ -75,7 +75,7 @@ final class RunCheck extends Command
             'request_headers' => $stats->getRequest()->getHeaders(),
         ];
 
-        // TODO: needs to be refactored
+        // TODO: needs to be refactored, after implemented tests
         foreach ($check->assertions as $assertion) {
             switch ($assertion->sign) {
                 case AssertionSign::LESS_THAN:
@@ -202,7 +202,6 @@ final class RunCheck extends Command
 
     private function saveHistory(Check $check, array $metadata, array $rootCause, CheckHistoryType $type): void
     {
-        // TODO: The history needs to be cleared after some time, maybe a cronjob to clear the history time to time based on the subscription plan (retention time)
         $history = new CheckHistory;
         $history->check_id = $check->id;
         $history->metadata = $metadata;

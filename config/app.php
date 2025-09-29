@@ -125,4 +125,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Check History Retention
+    |--------------------------------------------------------------------------
+    |
+    | This value determines how many days of check history to keep in the
+    | database. Older records will be automatically deleted by the cleanup
+    | command. Set to 0 or negative value to disable automatic cleanup.
+    |
+    */
+
+    'check_history_retention_days' => env('CHECK_HISTORY_RETENTION_DAYS', 30),
+
 ];

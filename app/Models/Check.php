@@ -7,12 +7,15 @@ namespace App\Models;
 use App\Enums\CheckHistoryType;
 use App\Enums\CheckType;
 use App\Enums\HTTPMethod;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Check extends Model
 {
+    use HasFactory;
+
     /**
      * Mass assigned properties.
      *
