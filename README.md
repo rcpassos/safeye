@@ -1,57 +1,435 @@
-# Safeye - Monitoring System for your Freelancer Projects
+# SafeEye - Monitoring System Documentation
 
-## Tech Stask
+**SafeEye** is a Laravel 11 application designed as a monitoring system specifically for freelancer projects. It provides comprehensive HTTP endpoint monitoring with configurable assertions, email notifications, and historical tracking.
 
--   Laravel v11
--   Filament v3
--   TailwindCSS v3
+## Table of Contents
 
-## Getting Started
+-   [Overview](#overview)
+-   [Key Features](#key-features)
+-   [Technology Stack](#technology-stack)
+-   [Architecture](#architecture)
+-   [Database Schema](#database-schema)
+-   [Models](#models)
+-   [Installation](#installation)
+-   [Usage](#usage)
+-   [Development Status](#development-status)
 
-### Installation process
+## Overview
 
-### With Sail
+SafeEye allows freelancers and developers to monitor their web applications, APIs, and services with automated checks and instant notifications when issues are detected. The system supports multi-user environments with role-based access control and project organization through groups.
 
--   [Docker Desktop](https://www.docker.com/products/docker-desktop/) installation
--   Make APP_PORT=8000 in .env to avoid collisions with other services that use port 80 by default
--   config Laravel Sail shell alias https://laravel.com/docs/11.x/sail#configuring-a-shell-alias
+## Key Features
 
-[Laravel Sail](https://laravel.com/docs/10.x/sail#introduction)
+### 🔍 HTTP Monitoring
 
-For Unix
+-   **Endpoint Monitoring**: Monitor any HTTP endpoint with customizable intervals
+-   **HTTP Methods**: Support for GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS
+-   **Request Configuration**:
+    -   Custom headers and request body
+    -   Configurable timeouts
+    -   Flexible intervals for check frequency
+-   **Active/Inactive States**: Enable or disable checks as needed
 
-1. `valet use` -> it will use the `.valetrc` file
-2. `composer global update`
-3. `composer install`
-4. `sail up -d` or `./vendor/bin/sail up -d`
-5. `sail composer install`
-6. `sail artisan migrate`
-7. `sail artisan db:seed`
-8. `sail npm install`
-9. `sail npm run dev`
-10. Access `http://safeye.test:8000/`
+### 📊 Assertions & Validation
 
-For Windows
-Pre-Requisites (php 8.3.x)
-(error can appear on php.ini, some extensions could be commented)
+The system validates responses through configurable assertions:
 
-1. `composer install`
-2. `wsl`
-3. `cd vendor/bin`
-4. `./sail up -d`
-5. `./sail composer install`
-6. `./sail artisan migrate`
-7. `./sail artisan db:seed`
-8. `./sail npm install`
-9. `./sail npm run dev`
+**Currently Implemented:**
 
-### With Valet
+-   ✅ **Response Time**: Validate endpoint response time
+-   ✅ **HTTP Status Code**: Ensure correct status codes are returned
 
-1. `nvm use 20` -> install nvm is needed
-2. `npm install`
-3. `valet use` -> it will use the `.valetrc` file
-4. `valet link safeye`
-5. `valet secure safeye`
-6. `composer global update` -> to update the composer dependencies
-7. `composer install` -> to install the dependencies
-8. `npm run dev` -> keep this running
+**Planned Features:**
+
+-   🚧 **Response Body**: Content validation in response body
+-   🚧 **JSON Response**: Validate JSON structure and values
+-   🚧 **Response Headers**: Validate specific headers
+-   🚧 **SSL Certificate**: Monitor SSL certificate expiration
+
+### 📧 Email Notifications
+
+-   **Incident Alerts**: Automatic email notifications when checks fail
+-   **Configurable Recipients**: Set different notification emails per check
+-   **Historical Tracking**: Track which emails were notified for each incident
+
+### 👥 Multi-User Support
+
+-   **User Authentication**: Secure login system
+-   **Admin Role**: Admin users can manage the entire system
+-   **User Isolation**: Users can only access their own checks and groups
+-   **Group Organization**: Organize checks by project or category
+
+### 📈 Historical Data & Analytics
+
+-   **Check History**: Complete log of all check executions
+-   **Error Tracking**: Detailed error information and root cause analysis
+-   **Recent Issues**: Quick view of issues in the last 24 hours
+-   **Metadata Storage**: Store additional context for each check execution
+
+## Technology Stack
+
+### Backend Framework
+
+-   **Laravel**: v11.44.0
+-   **PHP**: v8.3.16
+-   **Database**: SQLite (development), easily configurable for production
+
+### Frontend & UI
+
+-   **Filament**: v3.2.142 (Admin panel framework)
+-   **Livewire**: v3.5.20 (Dynamic interfaces)
+-   **TailwindCSS**: v3.4.3 (Styling)
+
+### Development & Quality Tools
+
+-   **Laravel Sail**: v1.41.0 (Docker development environment)
+-   **Laravel Pint**: v1.21.0 (Code formatting)
+-   **Larastan**: v3.1.0 (Static analysis)
+-   **PHPUnit**: v11.5.9 (Testing)
+-   **Rector**: v2.0.9 (Code modernization)
+
+### Additional Packages
+
+-   **Guzzle HTTP**: HTTP client for making requests
+-   **Filament JSON Field**: Enhanced JSON input components
+
+## Architecture
+
+### Core Models Relationship
+
+```
+User (1) ─── (many) Group (1) ─── (many) Check (1) ─── (many) Assertion
+   │                                 │
+   └── (many) Check                  └── (many) CheckHistory
+```
+
+### Check Execution Flow
+
+1. **Scheduled Execution**: Checks run based on configured intervals
+2. **HTTP Request**: System makes HTTP request to configured endpoint
+3. **Assertion Validation**: Response is validated against configured assertions
+4. **History Recording**: Results are stored in check_history table
+5. **Notification**: If check fails, email notifications are sent
+
+## Database Schema
+
+### Core Tables
+
+#### `users`
+
+Stores user accounts and authentication information.
+
+| Column            | Type     | Description                  |
+| ----------------- | -------- | ---------------------------- |
+| id                | integer  | Primary key                  |
+| name              | varchar  | User's full name             |
+| email             | varchar  | Email address (unique)       |
+| email_verified_at | datetime | Email verification timestamp |
+| password          | varchar  | Hashed password              |
+| is_admin          | tinyint  | Admin flag (0/1)             |
+| remember_token    | varchar  | Remember token for sessions  |
+| created_at        | datetime | Account creation timestamp   |
+| updated_at        | datetime | Last update timestamp        |
+
+#### `groups`
+
+Organizational containers for checks, allowing users to group related monitoring tasks.
+
+| Column     | Type     | Description                |
+| ---------- | -------- | -------------------------- |
+| id         | integer  | Primary key                |
+| name       | varchar  | Group name                 |
+| user_id    | integer  | Foreign key to users table |
+| created_at | datetime | Creation timestamp         |
+| updated_at | datetime | Last update timestamp      |
+
+**Foreign Keys:**
+
+-   `user_id` → `users.id`
+
+#### `checks`
+
+Core monitoring configuration defining what to monitor and how.
+
+| Column          | Type     | Description                         |
+| --------------- | -------- | ----------------------------------- |
+| id              | integer  | Primary key                         |
+| group_id        | integer  | Foreign key to groups table         |
+| user_id         | integer  | Foreign key to users table          |
+| name            | varchar  | Check name/description              |
+| type            | varchar  | Check type (currently 'http')       |
+| endpoint        | varchar  | URL to monitor                      |
+| http_method     | varchar  | HTTP method (GET, POST, etc.)       |
+| interval        | integer  | Check interval in minutes           |
+| request_timeout | integer  | Request timeout in seconds          |
+| request_headers | text     | JSON array of headers               |
+| request_body    | text     | JSON request body                   |
+| notify_emails   | text     | Comma-separated notification emails |
+| active          | tinyint  | Active status (0/1)                 |
+| last_run_at     | datetime | Last execution timestamp            |
+| created_at      | datetime | Creation timestamp                  |
+| updated_at      | datetime | Last update timestamp               |
+
+**Foreign Keys:**
+
+-   `user_id` → `users.id` (CASCADE delete)
+-   `group_id` → `groups.id`
+
+#### `assertions`
+
+Validation rules applied to check responses.
+
+| Column     | Type     | Description                                         |
+| ---------- | -------- | --------------------------------------------------- |
+| id         | integer  | Primary key                                         |
+| type       | varchar  | Assertion type (response.time, response.code, etc.) |
+| sign       | varchar  | Comparison operator (eq, gt, lt, gte, lte, neq)     |
+| value      | text     | Expected value to compare against                   |
+| check_id   | integer  | Foreign key to checks table                         |
+| created_at | datetime | Creation timestamp                                  |
+| updated_at | datetime | Last update timestamp                               |
+
+**Foreign Keys:**
+
+-   `check_id` → `checks.id`
+
+**Assertion Types:**
+
+-   `response.time` - Response time validation
+-   `response.code` - HTTP status code validation
+-   `response.body` - Response body content (planned)
+-   `response.json` - JSON response validation (planned)
+-   `response.header` - Header validation (planned)
+-   `ssl_certificate.expires_in` - SSL certificate expiration (planned)
+
+#### `check_history`
+
+Historical record of all check executions and their results.
+
+| Column          | Type     | Description                             |
+| --------------- | -------- | --------------------------------------- |
+| id              | integer  | Primary key                             |
+| check_id        | integer  | Foreign key to checks table             |
+| notified_emails | text     | JSON array of notified email addresses  |
+| metadata        | text     | JSON metadata about the check execution |
+| root_cause      | text     | Error details if check failed           |
+| type            | varchar  | Result type (SUCCESS, ERROR)            |
+| created_at      | datetime | Execution timestamp                     |
+| updated_at      | datetime | Last update timestamp                   |
+
+**Foreign Keys:**
+
+-   `check_id` → `checks.id`
+
+### System Tables
+
+#### `cache` & `cache_locks`
+
+Laravel's cache system tables for performance optimization.
+
+#### `jobs`, `job_batches`, `failed_jobs`
+
+Queue system tables for background job processing.
+
+#### `sessions`
+
+User session management.
+
+#### `password_reset_tokens`
+
+Password reset functionality.
+
+#### `migrations`
+
+Laravel migration tracking.
+
+## Models
+
+### User Model
+
+```php
+final class User extends Model
+{
+    // User authentication and management
+    // Relationships: hasMany(Group), hasMany(Check)
+    // Implements: FilamentUser for admin access
+}
+```
+
+### Group Model
+
+```php
+final class Group extends Model
+{
+    // Project/category organization
+    // Relationships: belongsTo(User), hasMany(Check)
+}
+```
+
+### Check Model
+
+```php
+final class Check extends Model
+{
+    // Core monitoring configuration
+    // Relationships: belongsTo(User), belongsTo(Group),
+    //               hasMany(Assertion), hasMany(CheckHistory)
+    // Casts: http_method → HTTPMethod enum
+    //        type → CheckType enum
+    //        active → boolean
+    //        request_headers, request_body → array
+}
+```
+
+### Assertion Model
+
+```php
+final class Assertion extends Model
+{
+    // Validation rules for checks
+    // Relationships: belongsTo(Check)
+    // Casts: type → AssertionType enum
+    //        sign → AssertionSign enum
+}
+```
+
+### CheckHistory Model
+
+```php
+final class CheckHistory extends Model
+{
+    // Execution history and results
+    // Relationships: belongsTo(Check)
+    // Stores execution results, errors, and notification tracking
+}
+```
+
+## Installation
+
+### Prerequisites
+
+-   PHP 8.3+
+-   Composer
+-   Node.js 20+
+-   Docker Desktop (for Sail)
+
+### Development Setup with Laravel Sail
+
+1. **Clone the repository**
+
+    ```bash
+    git clone <repository-url>
+    cd safeye
+    ```
+
+2. **Install dependencies**
+
+    ```bash
+    composer install
+    ```
+
+3. **Environment setup**
+
+    ```bash
+    cp .env.example .env
+    # Edit .env file, set APP_PORT=8000 to avoid port conflicts
+    ```
+
+4. **Start with Sail**
+
+    ```bash
+    ./vendor/bin/sail up -d
+    ./vendor/bin/sail artisan migrate
+    ./vendor/bin/sail artisan db:seed
+    ./vendor/bin/sail npm install
+    ./vendor/bin/sail npm run dev
+    ```
+
+5. **Access the application**
+    - Web interface: `http://safeye.test:8000/`
+    - Admin panel: `http://safeye.test:8000/app`
+
+### Development Setup with Valet
+
+1. **Use correct Node version**
+
+    ```bash
+    nvm use 20
+    ```
+
+2. **Install and setup**
+    ```bash
+    composer install
+    valet use
+    php artisan migrate
+    php artisan db:seed
+    npm install
+    npm run dev
+    ```
+
+## Usage
+
+### Creating Checks
+
+1. **Access Admin Panel**: Navigate to `/app` and login
+2. **Create Group** (optional): Organize checks by project
+3. **Add Check**: Configure endpoint, method, headers, and timeout
+4. **Set Assertions**: Define validation rules (response time, status code)
+5. **Configure Notifications**: Set email addresses for alerts
+6. **Activate Check**: Enable monitoring
+
+### Managing Assertions
+
+Assertions define what constitutes a successful check:
+
+-   **Response Time**: `response.time` with operators like `lt` (less than) 5000ms
+-   **Status Code**: `response.code` with `eq` (equals) 200
+-   **Custom Values**: Define expected values based on assertion type
+
+### Monitoring Results
+
+-   **Dashboard**: View all checks and their current status
+-   **History**: Review detailed execution history
+-   **Recent Issues**: Quick access to problems in last 24 hours
+-   **Email Alerts**: Automatic notifications when checks fail
+
+## Development Status
+
+### ✅ Implemented Features
+
+-   HTTP endpoint monitoring
+-   Basic assertions (response time, status code)
+-   User authentication and authorization
+-   Group-based organization
+-   Email notification system
+-   Historical tracking and reporting
+-   Filament admin interface
+-   Multi-user support
+
+### 🚧 Planned Features
+
+-   Response body content validation
+-   JSON response structure validation
+-   HTTP header validation
+-   SSL certificate expiration monitoring
+-   Dashboard widgets and analytics
+-   API endpoints for external integration
+-   Advanced notification channels (Slack, Teams)
+-   Check scheduling improvements
+-   Performance metrics and trending
+
+### 🔧 Technical Improvements
+
+-   Background job processing for checks
+-   Rate limiting and performance optimization
+-   Enhanced error handling and logging
+-   Test coverage expansion
+-   Docker production configuration
+-   CI/CD pipeline setup
+
+---
+
+**Last Updated**: September 2025  
+**Version**: Development  
+**Laravel Version**: 11.44.0  
+**PHP Version**: 8.3.16
