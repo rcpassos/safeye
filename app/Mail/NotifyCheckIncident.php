@@ -30,7 +30,7 @@ final class NotifyCheckIncident extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Safeye found an incident in your check '.$this->checkHistory->check->name,
+            subject: __('mail.subject', ['check_name' => $this->checkHistory->check->name]),
         );
     }
 

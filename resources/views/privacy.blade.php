@@ -3,22 +3,26 @@
 
     <section>
         <div class="max-w-screen-xl px-4 py-8 mx-auto lg:py-24 lg:px-6">
-            <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-gray-900 mb-4">Privacy</h1>
-            <span class="text-gray-500 text-xl">The Privacy Policy for Safeye.</span>
+            <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-gray-900 mb-4">{{
+                __('frontend.privacy_title') }}</h1>
+            <span class="text-gray-500 text-xl">{{ __('frontend.privacy_subtitle') }}</span>
             <hr class="mt-4 mb-4" />
 
-            <span class="text-gray-700 text-base">Last Updated: May 20, 2024</span>
+            <span class="text-gray-700 text-base">{{ __('frontend.last_updated') }}: May 20, 2024</span>
 
-            <h2 class="text-2xl font-bold leading-tight tracking-tight text-gray-900 mb-2 mt-8">1. Introduction</h2>
+            <h2 class="text-2xl font-bold leading-tight tracking-tight text-gray-900 mb-2 mt-8">1. {{
+                __('frontend.introduction') }}</h2>
             <hr />
             <p class="mt-6">
-                Welcome to Safeye! This Privacy Policy describes how we collect, use, and handle your personal
-                information when you use our website <a href="https://safeye.co">https://safeye.co</a>, products, and
-                services (collectively, "Services"). Safeye ("us", "we", or "our") is committed to protecting your
+                {{ __('frontend.privacy_welcome') }} <a href="{{ config('app.url') }}">{{
+                    config('app.url') }}</a>, products, and
+                services (collectively, "Services"). {{ config('app.name') }} ("us", "we", or "our") is committed to
+                protecting your
                 privacy and handling your data in an open and transparent manner.
             </p>
 
-            <h2 class="text-2xl font-bold leading-tight tracking-tight text-gray-900 mb-2 mt-8">2. Information Collection
+            <h2 class="text-2xl font-bold leading-tight tracking-tight text-gray-900 mb-2 mt-8">2. Information
+                Collection
             </h2>
             <hr />
             <p class="mt-6">
@@ -91,7 +95,7 @@
             <hr />
             <p class="mt-6">
                 If you have any questions about this Privacy Policy, please contact us by email at <a
-                    href="mailto:support@safeye.co">support@safeye.co</a>.
+                    href="mailto:{{ config('app.support_email') }}">{{ config('app.support_email') }}</a>.
             </p>
         </div>
     </section>

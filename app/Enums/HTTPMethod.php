@@ -20,6 +20,14 @@ enum HTTPMethod: string implements HasLabel
 
     public function getLabel(): string
     {
-        return $this->name;
+        return match ($this) {
+            self::GET => __('http_methods.get'),
+            self::POST => __('http_methods.post'),
+            self::PUT => __('http_methods.put'),
+            self::PATCH => __('http_methods.patch'),
+            self::DELETE => __('http_methods.delete'),
+            self::OPTIONS => __('http_methods.options'),
+            self::HEAD => __('http_methods.head'),
+        };
     }
 }

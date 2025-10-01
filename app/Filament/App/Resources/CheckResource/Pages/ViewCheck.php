@@ -54,16 +54,17 @@ final class ViewCheck extends ViewRecord
                             RepeatableEntry::make('latestChecks')
                                 ->hiddenLabel()
                                 ->contained(true)
-                                ->placeholder('No checks found')
+                                ->placeholder(__('checks.no_checks_found'))
                                 ->schema([
                                     TextEntry::make('type')
-                                        ->label('Status')
+                                        ->label(__('checks.status'))
                                         ->badge()
                                         ->color(fn (CheckHistoryType $state): string => match ($state) {
                                             CheckHistoryType::SUCCESS => 'success',
                                             CheckHistoryType::ERROR => 'danger',
                                         }),
-                                    TextEntry::make('created_at'),
+                                    TextEntry::make('created_at')
+                                        ->label(__('common.created_at')),
                                     JsonEntry::make('metadata')
                                         ->key('metadata')
                                         ->lineNumbers(false)
@@ -73,12 +74,12 @@ final class ViewCheck extends ViewRecord
                                         ->foldedCode(true),
                                 ])
                                 ->columns(3),
-                        ])->heading('Latest Activity'),
+                        ])->heading(__('checks.latest_activity')),
                         Section::make([
                             RepeatableEntry::make('latestIssues')
                                 ->hiddenLabel()
                                 ->contained(true)
-                                ->placeholder('No issues found')
+                                ->placeholder(__('checks.no_issues_found'))
                                 ->schema([
                                     TextEntry::make('created_at'),
                                     JsonEntry::make('root_cause')
@@ -107,11 +108,11 @@ final class ViewCheck extends ViewRecord
                             ->formatStateUsing(fn (): string => $this->getSubheading()),
                         Grid::make([])->schema([
                             TextEntry::make('interval')
-                                ->formatStateUsing(fn (string $state): string => "Every {$state} seconds"),
+                                ->formatStateUsing(fn (string $state): string => __('checks.every_seconds', ['seconds' => $state])),
                             TextEntry::make('type'),
                         ])->columns(2),
                         TextEntry::make('request_timeout')
-                            ->formatStateUsing(fn (string $state): string => "{$state} seconds"),
+                            ->formatStateUsing(fn (string $state): string => __('checks.value_seconds', ['value' => $state])),
                         KeyValueEntry::make('request_headers'),
                         JsonEntry::make('request_body')
                             ->key('request_body')
@@ -131,9 +132,10 @@ final class ViewCheck extends ViewRecord
                             ->columns(3),
                         TextEntry::make('notify_emails')
                             ->formatStateUsing(fn (string $state): HtmlString => new HtmlString(implode('<br>', preg_split("/\r\n|\r|\n/", $state)))),
-                        TextEntry::make('created_at'),
+                        TextEntry::make('created_at')
+                            ->label(__('common.created_at')),
                     ])
-                        ->heading('Details')
+                        ->heading(__('checks.details'))
                         ->grow(false),
                 ])->columnSpan('full')->from('md'),
             ]

@@ -138,4 +138,6 @@ return [
 
     'check_history_retention_days' => env('CHECK_HISTORY_RETENTION_DAYS', 30),
 
+    'support_email' => env('SUPPORT_EMAIL', ''),
+
 ];

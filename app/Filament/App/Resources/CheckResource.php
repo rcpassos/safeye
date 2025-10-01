@@ -35,13 +35,14 @@ final class CheckResource extends Resource
             ->schema([
                 Toggle::make('active')
                     ->default(true),
-                Section::make('Basic Information')
+                Section::make(__('checks.basic_information'))
                     ->columns([
                         'sm' => 1,
                         'xl' => 2,
                     ])
                     ->schema([
                         TextInput::make('name')
+                            ->label(__('checks.name'))
                             ->required()
                             ->maxLength(255),
                         Select::make('group_id')
@@ -56,13 +57,14 @@ final class CheckResource extends Resource
                             ]),
                     ]),
 
-                Section::make('Request Details')
+                Section::make(__('checks.request_details'))
                     ->columns([
                         'sm' => 1,
                         'xl' => 3,
                     ])
                     ->schema([
                         Select::make('type')
+                            ->label(__('checks.type'))
                             ->columns([
                                 'xl' => 1,
                             ])
@@ -70,6 +72,7 @@ final class CheckResource extends Resource
                             ->required()
                             ->default(CheckType::HTTP),
                         TextInput::make('endpoint')
+                            ->label(__('checks.endpoint'))
                             ->columnSpan([
                                 'xl' => 3,
                             ])
@@ -77,23 +80,27 @@ final class CheckResource extends Resource
                             ->required()
                             ->maxLength(255),
                         Select::make('http_method')
-                            ->label('HTTP Method')
+                            ->label(__('checks.http_method'))
                             ->options(HTTPMethod::class)
                             ->required()
                             ->default(HTTPMethod::GET),
                         TextInput::make('interval')
-                            ->suffix('seconds')
+                            ->label(__('checks.interval'))
+                            ->suffix(__('checks.seconds'))
                             ->required()
                             ->numeric()
                             ->default(60),
                         TextInput::make('request_timeout')
-                            ->suffix('seconds')
+                            ->label(__('checks.request_timeout'))
+                            ->suffix(__('checks.seconds'))
                             ->required()
                             ->numeric()
                             ->default(10),
                         KeyValue::make('request_headers')
+                            ->label(__('checks.request_headers'))
                             ->columnSpanFull(),
                         JsonInput::make('request_body')
+                            ->label(__('checks.request_body'))
                             ->key('request_body')
                             ->columnSpanFull()
                             ->lineNumbers(true)
@@ -104,7 +111,7 @@ final class CheckResource extends Resource
                             ->foldedCode(false),
                     ]),
 
-                Section::make('Assertions')
+                Section::make(__('checks.assertions'))
                     ->schema([
                         Repeater::make('assertions')
                             ->relationship()
@@ -122,23 +129,24 @@ final class CheckResource extends Resource
                                     ->default(AssertionSign::EQUAL),
                                 TextInput::make('value')
                                     ->hiddenLabel()
-                                    ->placeholder('200')
+                                    ->placeholder(__('checks.placeholder_assertion_value'))
                                     ->default('200')
                                     ->required(),
                             ])
                             ->reorderable(false)
                             ->defaultItems(1)
                             ->minItems(1)
-                            ->addActionLabel('Add Assertion')
+                            ->addActionLabel(__('checks.add_assertion'))
                             ->columns(3),
                     ]),
 
-                Section::make('Alert Settings')
+                Section::make(__('checks.alert_settings'))
                     ->schema([
                         Textarea::make('notify_emails')
+                            ->label(__('checks.notify_emails'))
                             ->columnSpanFull()
                             ->rows(4)
-                            ->helperText('Place one email address per line'),
+                            ->helperText(__('checks.helper_notify_emails')),
                     ]),
 
             ]);

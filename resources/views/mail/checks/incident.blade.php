@@ -1,16 +1,17 @@
 <x-mail::message>
-# An incident was found
+    # {{ __('mail.incident_found') }}
 
-Check name: {{ $checkHistory->check->name }}
+    {{ __('mail.check_name') }}: {{ $checkHistory->check->name }}
 
-**Assertion Failed:**
+    **{{ __('mail.assertion_failed') }}:**
 
-{{ $checkHistory->root_cause['type'] }} {{ $checkHistory->root_cause['sign'] }} {{ $checkHistory->root_cause['value'] }}
+    {{ $checkHistory->root_cause['type'] }} {{ $checkHistory->root_cause['sign'] }} {{
+    $checkHistory->root_cause['value'] }}
 
-<x-mail::button :url="$check_url">
-    Open in Safeye
-</x-mail::button>
+    <x-mail::button :url="$check_url">
+        {{ __('mail.open_in_safeye') }}
+    </x-mail::button>
 
-Thanks,<br>
-{{ config('app.name') }}
+    {{ __('mail.thanks') }},<br>
+    {{ config('app.name') }}
 </x-mail::message>

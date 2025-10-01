@@ -15,6 +15,9 @@ enum CheckHistoryType: string implements HasLabel
 
     public function getLabel(): string
     {
-        return $this->value;
+        return match ($this) {
+            self::SUCCESS => __('check_history_types.success'),
+            self::ERROR => __('check_history_types.error'),
+        };
     }
 }

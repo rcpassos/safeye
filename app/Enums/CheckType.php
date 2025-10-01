@@ -14,6 +14,8 @@ enum CheckType: string implements HasLabel
 
     public function getLabel(): string
     {
-        return $this->name;
+        return match ($this) {
+            self::HTTP => __('check_types.http'),
+        };
     }
 }

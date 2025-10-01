@@ -3,17 +3,17 @@
         <div class="mr-auto place-self-center lg:col-span-7">
             <h1
                 class="max-w-2xl mb-4 text-4xl font-extrabold leading-none tracking-tight md:text-5xl xl:text-6xl dark:text-white">
-                Keep an eye on your <br>projects with <span class="text-purple-500">Safeye</span>!</h1>
-            <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">A
-                monitoring system that tracks projects via periodic checks, alerting customers if any issues arise.</p>
-            <x-a-link-button href="#pricing">
-                Get Safeye <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                {!! __('frontend.title', ['app_name' => config('app.name')]) !!}</h1>
+            <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">{{
+                __('frontend.subtitle') }}</p>
+            {{-- <x-a-link-button href="#pricing">
+                Get Start <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                     class="lucide lucide-arrow-right size-4">
                     <path d="M5 12h14"></path>
                     <path d="m12 5 7 7-7 7"></path>
                 </svg>
-            </x-a-link-button>
+            </x-a-link-button> --}}
         </div>
         <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
             <img src="{{ asset('images/hero.png') }}" alt="hero image">

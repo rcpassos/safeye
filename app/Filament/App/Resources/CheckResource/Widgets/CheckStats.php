@@ -20,6 +20,7 @@ final class CheckStats extends BaseWidget
         $check = $this->getRecord();
 
         $lastCheckInfo = $check->latestIssues->last();
+        $lastCheck = $lastCheckInfo ? ($lastCheckInfo->type === CheckHistoryType::ERROR ? __('common.sickly') : __('common.healthy')) : __('common.n_a');
 
         $uptime = $check->latestChecks->count() > 0 ? ceil($check->latestIssues->count() * 100 / $check->latestChecks->count()) : null;
 
@@ -32,18 +33,18 @@ final class CheckStats extends BaseWidget
         // TODO: to add more stats maybe I need to use sections in the ViewCheck page instead of Stats widget
 
         return [
-            Stat::make('STATUS', $lastCheckInfo ? ($lastCheckInfo->type === CheckHistoryType::ERROR ? 'Sickly' : 'Healthy') : 'N/A')
+            Stat::make(__('checks.last_check'), $lastCheck)
                 ->color($lastCheckInfo ? ($lastCheckInfo->type === CheckHistoryType::ERROR ? 'danger' : 'success') : null)
                 ->description($lastCheckInfo?->created_at?->diffForHumans()),
 
-            Stat::make('UP TIME', $uptime ? $uptime.'%' : 'N/A')
-                ->description($uptime ? '24 Hours' : null),
+            Stat::make(__('checks.uptime'), $uptime ? $uptime.'%' : __('common.n_a'))
+                ->description($uptime ? __('common.24_hours') : null),
 
-            Stat::make('PERFORMANCE', $performance ? $performance.'s' : 'N/A')
-                ->description($performance ? '24 Hours' : null),
+            Stat::make(__('checks.performance'), $performance ? $performance.'s' : __('common.n_a'))
+                ->description($performance ? __('common.24_hours') : null),
 
-            Stat::make('CHECKS (ALERTS)', $check->latestChecks->count() > 0 ? "{$check->latestChecks->count()} ({$check->latestIssues->count()})" : 'N/A')
-                ->description($check->latestChecks->count() > 0 ? '24 Hours' : 0),
+            Stat::make(__('checks.checks_alerts'), $check->latestChecks->count() > 0 ? "{$check->latestChecks->count()} ({$check->latestIssues->count()})" : __('common.n_a'))
+                ->description($check->latestChecks->count() > 0 ? __('common.24_hours') : 0),
         ];
     }
 }

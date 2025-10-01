@@ -3,18 +3,20 @@
 
     <section>
         <div class="max-w-screen-xl px-4 py-8 mx-auto lg:py-24 lg:px-6">
-            <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-gray-900 mb-4">Terms & Conditions</h1>
-            <span class="text-gray-500 text-xl">Read our terms and conditions.</span>
+            <h1 class="text-3xl font-extrabold leading-tight tracking-tight text-gray-900 mb-4">{{
+                __('frontend.terms_title') }}</h1>
+            <span class="text-gray-500 text-xl">{{ __('frontend.terms_subtitle') }}</span>
             <hr class="mt-4 mb-4" />
 
-            <span class="text-gray-700 text-base">Last Updated: May 20, 2024</span>
+            <span class="text-gray-700 text-base">{{ __('frontend.last_updated') }}: May 20, 2024</span>
 
-            <h2 class="text-2xl font-bold leading-tight tracking-tight text-gray-900 mb-2 mt-8">1. Introduction</h2>
+            <h2 class="text-2xl font-bold leading-tight tracking-tight text-gray-900 mb-2 mt-8">1. {{
+                __('frontend.introduction') }}</h2>
             <hr />
             <p class="mt-6">
-                Welcome to Safeye! These Terms & Conditions govern your use of our website located at <a
-                    href="https://safeye.co">https://safeye.co</a>
-                (hereinafter referred to as "Service") operated by Safeye ("us", "we", or "our").
+                {{ __('frontend.welcome_message') }} <a href="{{ config('app.url') }}">{{
+                    config('app.url') }}</a>
+                (hereinafter referred to as "Service") operated by {{ config('app.name') }} ("us", "we", or "our").
             </p>
 
             <h2 class="text-2xl font-bold leading-tight tracking-tight text-gray-900 mb-2 mt-8">2. Agreement to Terms
@@ -33,7 +35,8 @@
                 recurring and periodic basis ("Billing Cycle"). At the end of each Billing Cycle, your Subscription will
                 automatically renew under the exact same conditions unless you cancel it or Safeye cancels it. You may
                 cancel your Subscription renewal either through your online account management page or by contacting
-                Safeye customer support team at <a href="mailto:support@safeye.co">support@safeye.co</a>.
+                {{ config('app.name') }} customer support team at <a href="mailto:{{ config('app.support_email') }}">{{
+                    config('app.support_email') }}</a>.
             </p>
 
             <h2 class="text-2xl font-bold leading-tight tracking-tight text-gray-900 mb-2 mt-8">4. Refunds
@@ -75,8 +78,8 @@
             </h2>
             <hr />
             <p class="mt-6">
-                If you have any questions about these Terms, please contact us at <a
-                    href="mailto:support@safeye.co">support@safeye.co</a>.
+                {{ __('frontend.contact_support') }} <a href="mailto:{{ config('app.support_email') }}">{{
+                    config('app.support_email') }}</a>.
             </p>
             <p class="mt-4">
                 By continuing to access or use our Service after those revisions become effective, you agree to be bound

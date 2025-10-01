@@ -10,15 +10,22 @@ enum AssertionSign: string implements HasLabel
 {
     use ExtraMethods;
 
-    case LESS_THAN = '<';
-    case LESS_THAN_OR_EQUAL_TO = '<=';
-    case EQUAL = '=';
-    case NOT_EQUAL = '!=';
-    case GREATER_THAN = '>';
-    case GREATER_THAN_OR_EQUAL_TO = '>=';
+    case EQUAL = 'eq';
+    case NOT_EQUAL = 'neq';
+    case GREATER_THAN = 'gt';
+    case GREATER_THAN_OR_EQUAL = 'gte';
+    case LESS_THAN = 'lt';
+    case LESS_THAN_OR_EQUAL = 'lte';
 
     public function getLabel(): string
     {
-        return $this->value;
+        return match ($this) {
+            self::EQUAL => __('assertion_signs.equal'),
+            self::NOT_EQUAL => __('assertion_signs.not_equal'),
+            self::GREATER_THAN => __('assertion_signs.greater_than'),
+            self::GREATER_THAN_OR_EQUAL => __('assertion_signs.greater_than_or_equal'),
+            self::LESS_THAN => __('assertion_signs.less_than'),
+            self::LESS_THAN_OR_EQUAL => __('assertion_signs.less_than_or_equal'),
+        };
     }
 }

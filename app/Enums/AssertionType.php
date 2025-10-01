@@ -19,6 +19,13 @@ enum AssertionType: string implements HasLabel
 
     public function getLabel(): string
     {
-        return $this->value;
+        return match ($this) {
+            self::RESPONSE_TIME => __('assertion_types.response_time'),
+            self::RESPONSE_CODE => __('assertion_types.response_code'),
+            self::RESPONSE_BODY => __('assertion_types.response_body'),
+            self::RESPONSE_JSON => __('assertion_types.response_json'),
+            self::RESPONSE_HEADER => __('assertion_types.response_header'),
+            self::SSL_CERTIFICATE_EXPIRES_IN => __('assertion_types.ssl_certificate_expires_in'),
+        };
     }
 }
