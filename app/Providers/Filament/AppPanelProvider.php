@@ -25,8 +25,6 @@ final class AppPanelProvider extends PanelProvider
 
     public function panel(Panel $panel): Panel
     {
-        // TODO: add a logo https://filamentphp.com/docs/3.x/panels/themes#adding-a-logo
-
         return $panel
             ->id('app')
             ->path('app')
