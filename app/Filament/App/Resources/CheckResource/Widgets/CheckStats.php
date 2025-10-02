@@ -22,13 +22,21 @@ final class CheckStats extends BaseWidget
         $lastCheckInfo = $check->latestChecks->last();
         $lastCheck = $lastCheckInfo ? ($lastCheckInfo->type === CheckHistoryType::ERROR ? __('common.sickly') : __('common.healthy')) : __('common.n_a');
 
-        $uptime = $check->latestChecks->count() > 0 ? ceil($check->latestIssues->count() * 100 / $check->latestChecks->count()) : null;
+        $uptime = $check->latestChecks->count() > 0 ? ceil(($check->latestChecks->count() - $check->latestIssues->count()) * 100 / $check->latestChecks->count()) : null;
 
-        $performance = 0.0;
-        foreach ($check->latestChecks as $checkHistory) {
-            $performance += $checkHistory->metadata['transfer_time'] ?? 0.0; // TODO: check the units from transfer_time property
+        // Calculate average performance from successful checks only
+        $successfulChecks = $check->latestChecks->filter(function ($checkHistory) {
+            return $checkHistory->type === CheckHistoryType::SUCCESS
+                && isset($checkHistory->metadata['transfer_time']);
+        });
+
+        $performance = null;
+        if ($successfulChecks->count() > 0) {
+            $totalTransferTime = $successfulChecks->sum(function ($checkHistory) {
+                return $checkHistory->metadata['transfer_time'];
+            });
+            $performance = round($totalTransferTime / $successfulChecks->count(), 1);
         }
-        $performance = $check->latestChecks->count() ? round($performance / $check->latestChecks->count(), 1) : null;
 
         // TODO: to add more stats maybe I need to use sections in the ViewCheck page instead of Stats widget
 

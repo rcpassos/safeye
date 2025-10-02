@@ -52,7 +52,6 @@ final class ViewCheck extends ViewRecord
             [
                 Split::make([
                     Grid::make()->schema([
-                        // Section::make([]), // TODO: chart response time (transfer_time)
                         Section::make([
                             RepeatableEntry::make('latestChecks')
                                 ->hiddenLabel()
