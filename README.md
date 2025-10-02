@@ -174,6 +174,7 @@ Stores user accounts and authentication information.
 | password          | varchar  | Hashed password              |
 | is_admin          | tinyint  | Admin flag (0/1)             |
 | remember_token    | varchar  | Remember token for sessions  |
+| timezone          | varchar  | User's timezone preference   |
 | created_at        | datetime | Account creation timestamp   |
 | updated_at        | datetime | Last update timestamp        |
 
