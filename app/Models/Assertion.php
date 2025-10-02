@@ -6,10 +6,13 @@ namespace App\Models;
 
 use App\Enums\AssertionSign;
 use App\Enums\AssertionType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 final class Assertion extends Model
 {
+    use HasFactory;
+
     /**
      * Mass assigned properties.
      *

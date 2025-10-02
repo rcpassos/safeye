@@ -38,6 +38,7 @@ return [
 
     // Buttons
     'add_assertion' => 'Add Assertion',
+    'run_check_now' => 'Run Check Now',
 
     // Helper texts
     'helper_notify_emails' => 'Place one email address per line',
@@ -60,4 +61,8 @@ return [
     // Formatting
     'every_seconds' => 'Every :seconds seconds',
     'value_seconds' => ':value seconds',
+
+    // Actions
+    'check_executed' => 'Check executed successfully!',
+    'check_execution_failed' => 'Failed to execute check: :error',
 ];

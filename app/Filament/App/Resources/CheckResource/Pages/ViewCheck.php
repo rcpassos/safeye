@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\App\Resources\CheckResource\Pages;
 
+use App\Actions\RunSingleCheck;
 use App\Enums\CheckHistoryType;
 use App\Filament\App\Resources\CheckResource;
 use App\Filament\App\Resources\CheckResource\Widgets\CheckStats;
 use App\Models\Check;
 use CodebarAg\FilamentJsonField\Infolists\Components\JsonEntry;
+use Exception;
 use Filament\Actions;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\KeyValueEntry;
@@ -17,6 +19,7 @@ use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\HtmlString;
 
@@ -152,6 +155,35 @@ final class ViewCheck extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('run_check_now')
+                ->label(__('checks.run_check_now'))
+                ->icon('heroicon-o-play')
+                ->color('success')
+                ->action(function (): void {
+                    try {
+                        /** @var Check $check */
+                        $check = $this->getRecord();
+
+                        app(RunSingleCheck::class)->execute($check);
+
+                        Notification::make()
+                            ->title(__('checks.check_executed'))
+                            ->success()
+                            ->send();
+
+                        // Refresh the page to show the new check results
+                        $this->redirect($this->getResource()::getUrl('view', ['record' => $check]));
+                    } catch (Exception $e) {
+                        Notification::make()
+                            ->title(__('checks.check_execution_failed', ['error' => $e->getMessage()]))
+                            ->danger()
+                            ->send();
+                    }
+                })
+                ->requiresConfirmation()
+                ->modalHeading(__('checks.run_check_now'))
+                ->modalDescription('Are you sure you want to run this check now? This will execute the check immediately and may send notifications if issues are found.')
+                ->modalSubmitActionLabel(__('checks.run_check_now')),
             Actions\EditAction::make(),
         ];
     }

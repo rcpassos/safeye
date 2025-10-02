@@ -19,7 +19,7 @@ final class CheckStats extends BaseWidget
         /** @var Check $check */
         $check = $this->getRecord();
 
-        $lastCheckInfo = $check->latestIssues->last();
+        $lastCheckInfo = $check->latestChecks->last();
         $lastCheck = $lastCheckInfo ? ($lastCheckInfo->type === CheckHistoryType::ERROR ? __('common.sickly') : __('common.healthy')) : __('common.n_a');
 
         $uptime = $check->latestChecks->count() > 0 ? ceil($check->latestIssues->count() * 100 / $check->latestChecks->count()) : null;
@@ -44,7 +44,7 @@ final class CheckStats extends BaseWidget
                 ->description($performance ? __('common.24_hours') : null),
 
             Stat::make(__('checks.checks_alerts'), $check->latestChecks->count() > 0 ? "{$check->latestChecks->count()} ({$check->latestIssues->count()})" : __('common.n_a'))
-                ->description($check->latestChecks->count() > 0 ? __('common.24_hours') : 0),
+                ->description($check->latestChecks->count() > 0 ? __('common.24_hours') : null),
         ];
     }
 }

@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\CheckType;
-use App\Enums\HTTPMethod;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,11 +19,12 @@ return new class extends Migration
                 ->nullable()
                 ->constrained();
             $table->foreignId('user_id')
-                ->constrained()->cascadeOnDelete();
+                ->constrained()
+                ->cascadeOnDelete();
             $table->string('name');
-            $table->enum('type', CheckType::values())->default(CheckType::HTTP->value);
+            $table->enum('type', ['http']);
             $table->string('endpoint');
-            $table->enum('http_method', HTTPMethod::values())->nullable();
+            $table->enum('http_method', ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'])->nullable();
             $table->unsignedBigInteger('interval')->default(60);
             $table->unsignedBigInteger('request_timeout')->default(10);
             $table->json('request_headers')->nullable();

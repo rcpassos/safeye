@@ -15,7 +15,7 @@ final class CreateCheck extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['user_id'] = Auth::id();
-        $data['notify_emails'] = str_replace(' ', ';', $data['notify_emails']);
+        $data['notify_emails'] = $data['notify_emails'] ? str_replace(' ', ';', $data['notify_emails']) : null;
 
         return $data;
     }
