@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
-use App\Enums\AssertionSign;
 use App\Enums\AssertionType;
 use App\Enums\CheckHistoryType;
-use App\Mail\NotifyCheckIncident;
 use App\Models\Check;
-use App\Models\CheckHistory;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\TransferStats;
-use Illuminate\Support\Facades\Mail;
 
 final class RunSingleCheck
 {
-    public function execute(Check $check): void
+    public function __construct(
+        private readonly SaveCheckHistory $saveCheckHistory,
+        private readonly EvaluateAssertion $evaluateAssertion
+    ) {}
+
+    public function handle(Check $check): void
     {
         $client = new Client([
             'timeout' => $check->request_timeout,
@@ -57,7 +58,7 @@ final class RunSingleCheck
                 'request_body' => $check->request_body,
             ];
 
-            $this->saveHistory(
+            $this->saveCheckHistory->handle(
                 check: $check,
                 metadata: $metadata,
                 rootCause: ['error' => 'Request failed: '.$e->getMessage()],
@@ -89,7 +90,7 @@ final class RunSingleCheck
                 ? CheckHistoryType::SUCCESS
                 : CheckHistoryType::ERROR;
 
-            $this->saveHistory(
+            $this->saveCheckHistory->handle(
                 check: $check,
                 metadata: $metadata,
                 rootCause: $response ? [] : ['error' => 'No response received'],
@@ -105,62 +106,14 @@ final class RunSingleCheck
                 ? $stats->getTransferTime()
                 : ($response?->getStatusCode() ?? 0);
 
-            $expectedValue = (float) $assertion->value;
-            $success = false;
+            $success = $this->evaluateAssertion->handle($assertion, $actualValue);
 
-            switch ($assertion->sign) {
-                case AssertionSign::LESS_THAN:
-                    $success = $actualValue < $expectedValue;
-                    break;
-                case AssertionSign::LESS_THAN_OR_EQUAL:
-                    $success = $actualValue <= $expectedValue;
-                    break;
-                case AssertionSign::EQUAL:
-                    $success = abs($actualValue - $expectedValue) < 0.001; // Float comparison
-                    break;
-                case AssertionSign::NOT_EQUAL:
-                    $success = abs($actualValue - $expectedValue) >= 0.001; // Float comparison
-                    break;
-                case AssertionSign::GREATER_THAN:
-                    $success = $actualValue > $expectedValue;
-                    break;
-                case AssertionSign::GREATER_THAN_OR_EQUAL:
-                    $success = $actualValue >= $expectedValue;
-                    break;
-                default:
-                    $success = false;
-                    break;
-            }
-
-            $this->saveHistory(
+            $this->saveCheckHistory->handle(
                 check: $check,
                 metadata: $metadata,
                 rootCause: $assertion->attributesToArray(),
                 type: $success ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
             );
         }
-    }
-
-    private function saveHistory(Check $check, array $metadata, array $rootCause, CheckHistoryType $type): void
-    {
-        $history = new CheckHistory;
-        $history->check_id = $check->id;
-        $history->metadata = $metadata;
-        $history->root_cause = $rootCause;
-        $history->type = $type;
-        $history->notified_emails = $check->notify_emails;
-        $history->save();
-
-        if (
-            $type === CheckHistoryType::ERROR &&
-            ! empty($check->notify_emails)
-        ) {
-            $this->notifyEmails(preg_split("/\r\n|\r|\n/", $check->notify_emails), $history);
-        }
-    }
-
-    private function notifyEmails(array $emails, CheckHistory $checkHistory): void
-    {
-        Mail::to($emails)->send(new NotifyCheckIncident($checkHistory));
     }
 }

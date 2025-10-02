@@ -38,7 +38,7 @@ final class RunCheck extends Command
             $now = Carbon::now();
 
             if (is_null($lastChecked) || $lastChecked->diffInMinutes($now) >= $check->interval) {
-                $runSingleCheck->execute($check);
+                $runSingleCheck->handle($check);
             }
         }
     }

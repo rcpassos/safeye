@@ -40,8 +40,11 @@ final class RunSingleCheckActionTest extends TestCase
         $this->assertDatabaseCount('check_history', 0);
 
         // Run the action
-        $action = new RunSingleCheck();
-        $action->execute($check);
+        $action = new RunSingleCheck(
+            app(\App\Actions\SaveCheckHistory::class),
+            app(\App\Actions\EvaluateAssertion::class)
+        );
+        $action->handle($check);
 
         // Assert check history was created (even with no assertions)
         $this->assertDatabaseCount('check_history', 1);
@@ -74,8 +77,11 @@ final class RunSingleCheckActionTest extends TestCase
         $this->assertDatabaseCount('check_history', 0);
 
         // Run the action
-        $action = new RunSingleCheck();
-        $action->execute($check);
+        $action = new RunSingleCheck(
+            app(\App\Actions\SaveCheckHistory::class),
+            app(\App\Actions\EvaluateAssertion::class)
+        );
+        $action->handle($check);
 
         // Assert check history was created even for failed requests
         $this->assertDatabaseCount('check_history', 1);

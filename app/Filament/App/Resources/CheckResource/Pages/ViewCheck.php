@@ -164,7 +164,7 @@ final class ViewCheck extends ViewRecord
                         /** @var Check $check */
                         $check = $this->getRecord();
 
-                        app(RunSingleCheck::class)->execute($check);
+                        app(RunSingleCheck::class)->handle($check);
 
                         Notification::make()
                             ->title(__('checks.check_executed'))

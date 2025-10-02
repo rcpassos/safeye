@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\CheckHistory;
-use Carbon\Carbon;
+use App\Actions\ClearOldCheckHistory as ClearOldCheckHistoryAction;
 use Illuminate\Console\Command;
 
 final class ClearOldCheckHistory extends Command
@@ -27,19 +26,17 @@ final class ClearOldCheckHistory extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): int
+    public function handle(ClearOldCheckHistoryAction $action): int
     {
         $retentionDays = config('app.check_history_retention_days', 30);
 
-        if ($retentionDays <= 0) {
+        $deletedCount = $action->handle($retentionDays);
+
+        if ($deletedCount === 0 && $retentionDays <= 0) {
             $this->info('Check history retention is disabled (retention days is 0 or negative).');
 
             return self::SUCCESS;
         }
-
-        $cutoffDate = Carbon::now()->subDays($retentionDays);
-
-        $deletedCount = CheckHistory::where('created_at', '<', $cutoffDate)->delete();
 
         if ($deletedCount > 0) {
             $this->info("Successfully deleted {$deletedCount} old check history record(s) older than {$retentionDays} days.");
