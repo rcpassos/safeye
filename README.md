@@ -93,6 +93,52 @@ The system validates responses through configurable assertions:
 -   **Guzzle HTTP**: HTTP client for making requests
 -   **Filament JSON Field**: Enhanced JSON input components
 
+## Open Source Libraries
+
+SafeEye is built on top of amazing open source projects. We're grateful to the following libraries and their maintainers:
+
+### Core Framework & Backend
+
+-   **[Laravel Framework](https://laravel.com/)** (v11.44.0) - The PHP framework for web artisans
+-   **[Guzzle HTTP](https://docs.guzzlephp.org/)** (v7.8+) - PHP HTTP client for making HTTP requests
+-   **[Laravel Tinker](https://github.com/laravel/tinker)** (v2.9+) - Powerful REPL for Laravel
+
+### Admin Panel & UI
+
+-   **[Filament](https://filamentphp.com/)** (v3.2.142) - Elegant admin panel builder for Laravel
+-   **[Livewire](https://livewire.laravel.com/)** (v3.5.20) - Full-stack framework for dynamic interfaces
+-   **[Filament JSON Field](https://github.com/codebar-ag/filament-json-field)** (v1.4+) - Enhanced JSON input components for Filament
+
+### Frontend
+
+-   **[TailwindCSS](https://tailwindcss.com/)** (v3.4.3) - Utility-first CSS framework
+-   **[Flowbite](https://flowbite.com/)** (v2.3.0) - Tailwind CSS component library
+-   **[Alpine.js](https://alpinejs.dev/)** - Lightweight JavaScript framework (included with Livewire)
+-   **[Vite](https://vitejs.dev/)** (v5.0+) - Next generation frontend tooling
+-   **[PostCSS](https://postcss.org/)** (v8.4.38+) - Tool for transforming CSS with JavaScript
+-   **[Autoprefixer](https://github.com/postcss/autoprefixer)** (v10.4.19+) - PostCSS plugin to parse CSS and add vendor prefixes
+-   **[Axios](https://axios-http.com/)** (v1.6.4+) - Promise-based HTTP client for the browser
+
+### Development & Quality Tools
+
+-   **[Laravel Sail](https://laravel.com/docs/sail)** (v1.41.0) - Docker development environment for Laravel
+-   **[Laravel Pint](https://laravel.com/docs/pint)** (v1.21.0) - Opinionated PHP code style fixer
+-   **[Larastan](https://github.com/larastan/larastan)** (v3.1.0) - Laravel wrapper for PHPStan
+-   **[PHPStan](https://phpstan.org/)** - Static analysis tool for PHP
+-   **[Rector](https://getrector.com/)** (v2.0.9) - Automated code refactoring and upgrades
+-   **[PHPUnit](https://phpunit.de/)** (v11.5.9) - Testing framework for PHP
+-   **[Laravel Boost](https://github.com/laravel/boost)** (v1.1+) - Development productivity tools for Laravel
+-   **[Mockery](https://github.com/mockery/mockery)** (v1.6+) - Simple PHP mocking framework
+-   **[Collision](https://github.com/nunomaduro/collision)** (v8.0+) - Beautiful error reporting for console applications
+-   **[Faker](https://github.com/FakerPHP/Faker)** (v1.23+) - PHP library for generating fake data
+-   **[Spatie Laravel Ignition](https://github.com/spatie/laravel-ignition)** (v2.4+) - Beautiful error page for Laravel
+
+### Build Tools
+
+-   **[Laravel Vite Plugin](https://github.com/laravel/vite-plugin)** (v1.0+) - Laravel plugin for Vite
+-   **[Composer](https://getcomposer.org/)** - Dependency manager for PHP
+-   **[NPM](https://www.npmjs.com/)** - Package manager for JavaScript
+
 ## Architecture
 
 ### Core Models Relationship
