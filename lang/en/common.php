@@ -25,4 +25,6 @@ return [
     'updated_at' => 'Updated at',
     'healthy' => 'Healthy',
     'sickly' => 'Sickly',
+    'timezone' => 'Timezone',
+    'timezone_helper' => 'Your timezone will be detected automatically, but you can change it here.',
 ];

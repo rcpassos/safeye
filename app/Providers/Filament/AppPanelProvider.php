@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\App\Pages\Auth\EditProfile;
+use App\Filament\App\Pages\Auth\Register;
+use App\Http\Middleware\SetUserTimezone;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -57,11 +60,12 @@ final class AppPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                SetUserTimezone::class,
             ])
             ->login()
-            ->registration()
+            ->registration(Register::class)
             ->passwordReset()
-            ->profile(isSimple: false)
+            ->profile(EditProfile::class, isSimple: false)
             ->topNavigation()
             ->maxContentWidth('full')
             ->spa();

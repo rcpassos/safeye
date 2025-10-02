@@ -19,7 +19,7 @@ final class CheckStats extends BaseWidget
         /** @var Check $check */
         $check = $this->getRecord();
 
-        $lastCheckInfo = $check->latestChecks->last();
+        $lastCheckInfo = $check->latestChecks->first(); // Changed from ->last() to ->first() because ordered desc
         $lastCheck = $lastCheckInfo ? ($lastCheckInfo->type === CheckHistoryType::ERROR ? __('common.sickly') : __('common.healthy')) : __('common.n_a');
 
         $uptime = $check->latestChecks->count() > 0 ? ceil(($check->latestChecks->count() - $check->latestIssues->count()) * 100 / $check->latestChecks->count()) : null;

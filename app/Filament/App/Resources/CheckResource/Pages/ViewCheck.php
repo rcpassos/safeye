@@ -66,7 +66,9 @@ final class ViewCheck extends ViewRecord
                                             CheckHistoryType::ERROR => 'danger',
                                         }),
                                     TextEntry::make('created_at')
-                                        ->label(__('common.created_at')),
+                                        ->label(__('common.created_at'))
+                                        ->dateTime()
+                                        ->since(),
                                     JsonEntry::make('metadata')
                                         ->key('metadata')
                                         ->lineNumbers(false)
@@ -83,7 +85,9 @@ final class ViewCheck extends ViewRecord
                                 ->contained(true)
                                 ->placeholder(__('checks.no_issues_found'))
                                 ->schema([
-                                    TextEntry::make('created_at'),
+                                    TextEntry::make('created_at')
+                                        ->dateTime()
+                                        ->since(),
                                     JsonEntry::make('root_cause')
                                         ->key('root_cause')
                                         ->lineNumbers(false)
@@ -135,7 +139,9 @@ final class ViewCheck extends ViewRecord
                         TextEntry::make('notify_emails')
                             ->formatStateUsing(fn (string $state): HtmlString => new HtmlString(implode('<br>', preg_split("/\r\n|\r|\n/", $state)))),
                         TextEntry::make('created_at')
-                            ->label(__('common.created_at')),
+                            ->label(__('common.created_at'))
+                            ->dateTime()
+                            ->since(),
                     ])
                         ->heading(__('checks.details'))
                         ->grow(false),
