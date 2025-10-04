@@ -6,6 +6,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\App\Pages\Auth\EditProfile;
 use App\Filament\App\Pages\Auth\Register;
+use App\Filament\App\Pages\Dashboard;
 use App\Http\Middleware\SetUserTimezone;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -14,6 +15,7 @@ use Filament\Panel;
 use Filament\Panel\Concerns\HasTenancy;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -43,7 +45,7 @@ final class AppPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\\Filament\\App\\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\\Filament\\App\\Pages')
             ->pages([
-                // Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\\Filament\\App\\Widgets')
             ->widgets([])
@@ -67,7 +69,7 @@ final class AppPanelProvider extends PanelProvider
             ->passwordReset()
             ->profile(EditProfile::class, isSimple: false)
             ->topNavigation()
-            ->maxContentWidth('full')
+            ->maxContentWidth(MaxWidth::Full)
             ->spa();
     }
 }

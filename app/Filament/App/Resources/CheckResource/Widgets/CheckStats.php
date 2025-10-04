@@ -38,8 +38,6 @@ final class CheckStats extends BaseWidget
             $performance = round($totalTransferTime / $successfulChecks->count(), 1);
         }
 
-        // TODO: to add more stats maybe I need to use sections in the ViewCheck page instead of Stats widget
-
         return [
             Stat::make(__('checks.last_check'), $lastCheck)
                 ->color($lastCheckInfo ? ($lastCheckInfo->type === CheckHistoryType::ERROR ? 'danger' : 'success') : null)

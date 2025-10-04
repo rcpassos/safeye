@@ -28,6 +28,44 @@ This application is a Laravel application and its main Laravel ecosystems packag
 -   Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
 -   Check for existing components to reuse before writing a new one.
 
+## Internationalization (i18n)
+
+-   **Never use hardcoded text strings** in PHP files, Blade templates, or any user-facing code.
+-   **Always use Laravel's translation helpers** for all user-facing text:
+    -   Use `__('file.key')` in PHP files
+    -   Use `{{ __('file.key') }}` in Blade templates
+    -   Use `@lang('file.key')` for Blade directives when appropriate
+-   **Language file structure:**
+    -   All translation files must be stored in `lang/en/` directory
+    -   Organize translations by feature/context (e.g., `dashboard.php`, `checks.php`, `common.php`)
+    -   Use nested arrays for better organization
+    -   Check existing language files for similar translations before creating new ones
+-   **Translation key naming:**
+    -   Use descriptive, lowercase keys with underscores: `date_range`, `start_date`, `total_checks`
+    -   Group related translations under parent keys: `filters.date_range`, `stats.total_checks`
+    -   Keep keys consistent across files
+-   **When creating new features:**
+    1. Create or update the appropriate language file first
+    2. Use translation keys throughout the code
+    3. Never commit hardcoded text
+-   **Examples:**
+
+    ```php
+    // BAD - Hardcoded text
+    Stat::make('Total Checks', $totalChecks)
+
+    // GOOD - Using translations
+    Stat::make(__('dashboard.stats.total_checks'), $totalChecks)
+
+    // BAD - Hardcoded in Blade
+    <h1>Welcome to Dashboard</h1>
+
+    // GOOD - Using translations in Blade
+    <h1>{{ __('dashboard.welcome') }}</h1>
+    ```
+
+-   **Always check for hardcoded text** before finalizing any code changes.
+
 ## Verification Scripts
 
 -   Do not create verification scripts or tinker when tests cover that functionality and prove it works. Unit and feature tests are more important.
