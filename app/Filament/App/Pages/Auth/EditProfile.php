@@ -59,13 +59,4 @@ final class EditProfile extends BaseEditProfile
 
         return $timezoneOptions;
     }
-
-    private function afterSave(): void
-    {
-        // Update the application timezone immediately after saving
-        if (Auth::user()->timezone) {
-            config(['app.timezone' => Auth::user()->timezone]);
-            date_default_timezone_set(Auth::user()->timezone);
-        }
-    }
 }

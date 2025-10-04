@@ -20,7 +20,6 @@ final class EvaluateAssertion
             AssertionSign::NOT_EQUAL => abs($actualValue - $expectedValue) >= 0.001,
             AssertionSign::GREATER_THAN => $actualValue > $expectedValue,
             AssertionSign::GREATER_THAN_OR_EQUAL => $actualValue >= $expectedValue,
-            default => false,
         };
     }
 }

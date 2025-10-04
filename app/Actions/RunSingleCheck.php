@@ -7,7 +7,6 @@ namespace App\Actions;
 use App\Enums\AssertionType;
 use App\Enums\CheckHistoryType;
 use App\Models\Check;
-use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\TransferStats;
@@ -38,11 +37,7 @@ final readonly class RunSingleCheck
 
             // Handle request body - convert array to JSON string if needed
             if (! empty($check->request_body)) {
-                if (is_array($check->request_body)) {
-                    $requestOptions['json'] = $check->request_body;
-                } else {
-                    $requestOptions['body'] = $check->request_body;
-                }
+                $requestOptions['json'] = $check->request_body;
             }
 
             $client->requestAsync($check->http_method->value, $check->endpoint, $requestOptions)->wait();
@@ -67,7 +62,7 @@ final readonly class RunSingleCheck
             );
         }
 
-        $check->last_run_at = Carbon::now();
+        $check->last_run_at = now();
         $check->save();
     }
 

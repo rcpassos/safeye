@@ -292,6 +292,24 @@ Forms\Components\Select::make('user_id')
 ### Model Creation
 
 - When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `list-artisan-commands` to check the available options to `php artisan make:model`.
+- **Always add `@property` annotations** to all Eloquent models for proper PHPStan type checking. This helps PHPStan understand model properties, especially when using casts for enums or dates.
+
+<code-snippet name="Model Property Annotations Example" lang="php">
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property HTTPMethod $http_method
+ * @property CheckType $type
+ * @property array<string, mixed> $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
+final class Check extends Model
+{
+    // Model implementation
+}
+</code-snippet>
 
 ### APIs & Eloquent Resources
 
@@ -737,13 +755,13 @@ document.addEventListener('livewire:init', function () {
 
 - When listing items, use gap utilities for spacing, don't use margins.
 
-      <code-snippet name="Valid Flex Gap Spacing Example" lang="html">
-          <div class="flex gap-8">
-              <div>Superior</div>
-              <div>Michigan</div>
-              <div>Erie</div>
-          </div>
-      </code-snippet>
+        <code-snippet name="Valid Flex Gap Spacing Example" lang="html">
+            <div class="flex gap-8">
+                <div>Superior</div>
+                <div>Michigan</div>
+                <div>Erie</div>
+            </div>
+        </code-snippet>
 
 ### Dark Mode
 

@@ -12,6 +12,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $group_id
+ * @property int $user_id
+ * @property string $name
+ * @property CheckType $type
+ * @property string $endpoint
+ * @property HTTPMethod $http_method
+ * @property int $interval
+ * @property int $request_timeout
+ * @property array<string, mixed> $request_headers
+ * @property array<string, mixed>|null $request_body
+ * @property string $notify_emails
+ * @property bool $active
+ * @property \Illuminate\Support\Carbon|null $last_run_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 final class Check extends Model
 {
     use HasFactory;

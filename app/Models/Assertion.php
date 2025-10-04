@@ -9,6 +9,15 @@ use App\Enums\AssertionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $check_id
+ * @property AssertionType $type
+ * @property AssertionSign $sign
+ * @property string $value
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 final class Assertion extends Model
 {
     use HasFactory;
