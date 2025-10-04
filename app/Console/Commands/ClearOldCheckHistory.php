@@ -28,7 +28,7 @@ final class ClearOldCheckHistory extends Command
      */
     public function handle(ClearOldCheckHistoryAction $action): int
     {
-        $retentionDays = config('app.check_history_retention_days', 30);
+        $retentionDays = (int) config('app.check_history_retention_days', 30);
 
         $deletedCount = $action->handle($retentionDays);
 
