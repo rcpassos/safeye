@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('assertions', function (Blueprint $table) {
+        Schema::create('assertions', function (Blueprint $table): void {
             $table->id();
             $table->enum('type', ['response.time', 'response.code', 'response.body', 'response.json', 'response.header', 'ssl_certificate.expires_in']);
             $table->enum('sign', ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'contains', 'not_contains', 'regex']);

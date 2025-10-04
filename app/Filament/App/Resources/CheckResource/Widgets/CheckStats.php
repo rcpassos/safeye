@@ -25,16 +25,12 @@ final class CheckStats extends BaseWidget
         $uptime = $check->latestChecks->count() > 0 ? ceil(($check->latestChecks->count() - $check->latestIssues->count()) * 100 / $check->latestChecks->count()) : null;
 
         // Calculate average performance from successful checks only
-        $successfulChecks = $check->latestChecks->filter(function ($checkHistory) {
-            return $checkHistory->type === CheckHistoryType::SUCCESS
-                && isset($checkHistory->metadata['transfer_time']);
-        });
+        $successfulChecks = $check->latestChecks->filter(fn ($checkHistory): bool => $checkHistory->type === CheckHistoryType::SUCCESS
+            && isset($checkHistory->metadata['transfer_time']));
 
         $performance = null;
         if ($successfulChecks->count() > 0) {
-            $totalTransferTime = $successfulChecks->sum(function ($checkHistory) {
-                return $checkHistory->metadata['transfer_time'];
-            });
+            $totalTransferTime = $successfulChecks->sum(fn ($checkHistory) => $checkHistory->metadata['transfer_time']);
             $performance = round($totalTransferTime / $successfulChecks->count(), 1);
         }
 

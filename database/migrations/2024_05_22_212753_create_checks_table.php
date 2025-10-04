@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('checks', function (Blueprint $table) {
+        Schema::create('checks', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('group_id')
                 ->nullable()

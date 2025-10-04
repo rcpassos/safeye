@@ -8,14 +8,15 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
-        "codebar-ag/filament-json-field": "^1.4",
+        "php": "^8.3",
+        "codebar-ag/laravel-filament-json-field": "^2.0",
         "filament/filament": "^3.2",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^2.0",
         "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.0",
         "laravel/boost": "^1.1",
@@ -56,15 +57,22 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
-        "lint": "pint",
-        "refactor": "rector",
-        "test:lint": "pint --test",
+        "lint": [
+            "rector",
+            "pint --parallel",
+            "npm run lint"
+        ],
+        "test:lint": [
+            "pint --parallel --test",
+            "rector --dry-run",
+            "npm run test:lint"
+        ],
+        "test:unit": "php artisan test",
         "test:types": "phpstan",
-        "test:refactor": "rector --dry-run",
         "test": [
+            "@test:unit",
             "@test:lint",
-            "@test:types",
-            "@test:refactor"
+            "@test:types"
         ]
     },
     "extra": {

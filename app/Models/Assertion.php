@@ -30,8 +30,11 @@ final class Assertion extends Model
      *
      * @return array<string, string>
      */
-    protected $casts = [
-        'type' => AssertionType::class,
-        'sign' => AssertionSign::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'type' => AssertionType::class,
+            'sign' => AssertionSign::class,
+        ];
+    }
 }

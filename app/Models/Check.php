@@ -37,20 +37,6 @@ final class Check extends Model
         'last_run_at',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected $casts = [
-        'http_method' => HTTPMethod::class,
-        'type' => CheckType::class,
-        'active' => 'boolean',
-        'request_headers' => 'array',
-        'request_body' => 'array',
-        'last_run_at' => 'datetime',
-    ];
-
     /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
@@ -92,5 +78,22 @@ final class Check extends Model
             ->where('created_at', '<=', now())
             ->where('created_at', '>=', now()->subHours(24))
             ->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'http_method' => HTTPMethod::class,
+            'type' => CheckType::class,
+            'active' => 'boolean',
+            'request_headers' => 'array',
+            'request_body' => 'array',
+            'last_run_at' => 'datetime',
+        ];
     }
 }

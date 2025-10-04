@@ -61,7 +61,7 @@ final class CheckHistoryChart extends ChartWidget
                     'fill' => true,
                 ],
             ],
-            'labels' => $data->pluck('date')->map(fn ($date) => date('M j', strtotime($date)))->toArray(),
+            'labels' => $data->pluck('date')->map(fn ($date): string => date('M j', strtotime((string) $date)))->toArray(),
         ];
     }
 

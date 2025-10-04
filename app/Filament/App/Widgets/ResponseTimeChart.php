@@ -50,7 +50,7 @@ final class ResponseTimeChart extends ChartWidget
             'datasets' => [
                 [
                     'label' => __('dashboard.chart.avg_response_time'),
-                    'data' => $data->pluck('avg_response_time')->map(fn ($value) => round((float) $value, 2))->toArray(),
+                    'data' => $data->pluck('avg_response_time')->map(fn ($value): float => round((float) $value, 2))->toArray(),
                     'backgroundColor' => 'rgba(59, 130, 246, 0.2)',
                     'borderColor' => 'rgb(59, 130, 246)',
                     'fill' => true,
@@ -58,7 +58,7 @@ final class ResponseTimeChart extends ChartWidget
                 ],
                 [
                     'label' => __('dashboard.chart.max_response_time'),
-                    'data' => $data->pluck('max_response_time')->map(fn ($value) => round((float) $value, 2))->toArray(),
+                    'data' => $data->pluck('max_response_time')->map(fn ($value): float => round((float) $value, 2))->toArray(),
                     'backgroundColor' => 'rgba(239, 68, 68, 0.1)',
                     'borderColor' => 'rgb(239, 68, 68)',
                     'borderDash' => [5, 5],
@@ -66,7 +66,7 @@ final class ResponseTimeChart extends ChartWidget
                     'tension' => 0.4,
                 ],
             ],
-            'labels' => $data->pluck('date')->map(fn ($date) => date('M j', strtotime($date)))->toArray(),
+            'labels' => $data->pluck('date')->map(fn ($date): string => date('M j', strtotime((string) $date)))->toArray(),
         ];
     }
 

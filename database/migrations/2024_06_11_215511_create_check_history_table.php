@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('check_history', function (Blueprint $table) {
+        Schema::create('check_history', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('check_id')->constrained()->cascadeOnDelete();
             $table->text('notified_emails')->nullable();

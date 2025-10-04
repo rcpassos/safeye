@@ -23,8 +23,8 @@ final class CheckStatsOverview extends BaseWidget
         $userId = Filament::auth()->id();
         [$startDate, $endDate] = $this->getDateRange();
 
-        $totalChecks = Check::where('user_id', $userId)->count();
-        $activeChecks = Check::where('user_id', $userId)
+        $totalChecks = Check::query()->where('user_id', $userId)->count();
+        $activeChecks = Check::query()->where('user_id', $userId)
             ->where('active', true)
             ->count();
 

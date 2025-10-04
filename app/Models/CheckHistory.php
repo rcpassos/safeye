@@ -28,20 +28,23 @@ final class CheckHistory extends Model
         'type',
     ];
 
+    /** @return BelongsTo<Check, $this> */
+    public function check(): BelongsTo
+    {
+        return $this->belongsTo(Check::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
-    protected $casts = [
-        'metadata' => 'array',
-        'root_cause' => 'array',
-        'type' => CheckHistoryType::class,
-    ];
-
-    /** @return BelongsTo<Check, $this> */
-    public function check(): BelongsTo
+    protected function casts(): array
     {
-        return $this->belongsTo(Check::class);
+        return [
+            'metadata' => 'array',
+            'root_cause' => 'array',
+            'type' => CheckHistoryType::class,
+        ];
     }
 }

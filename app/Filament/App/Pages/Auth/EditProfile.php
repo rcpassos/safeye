@@ -37,7 +37,7 @@ final class EditProfile extends BaseEditProfile
                     ->helperText(__('common.timezone_helper'))
                     ->extraAttributes(['x-init' => '$el.value = Intl.DateTimeFormat().resolvedOptions().timeZone || \''.config('app.timezone').'\''])
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function ($state) {
+                    ->afterStateUpdated(function ($state): void {
                         if ($state) {
                             config(['app.timezone' => $state]);
                             date_default_timezone_set($state);
@@ -48,7 +48,7 @@ final class EditProfile extends BaseEditProfile
             ]);
     }
 
-    protected function getTimezoneOptions(): array
+    private function getTimezoneOptions(): array
     {
         $timezones = timezone_identifiers_list();
         $timezoneOptions = [];
@@ -60,7 +60,7 @@ final class EditProfile extends BaseEditProfile
         return $timezoneOptions;
     }
 
-    protected function afterSave(): void
+    private function afterSave(): void
     {
         // Update the application timezone immediately after saving
         if (Auth::user()->timezone) {

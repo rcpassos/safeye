@@ -17,6 +17,6 @@ final class ClearOldCheckHistory
 
         $cutoffDate = Carbon::now()->subDays($retentionDays);
 
-        return CheckHistory::where('created_at', '<', $cutoffDate)->delete();
+        return CheckHistory::query()->where('created_at', '<', $cutoffDate)->delete();
     }
 }

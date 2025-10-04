@@ -107,7 +107,7 @@ SafeEye is built on top of amazing open source projects. We're grateful to the f
 
 -   **[Filament](https://filamentphp.com/)** (v3.2.142) - Elegant admin panel builder for Laravel
 -   **[Livewire](https://livewire.laravel.com/)** (v3.5.20) - Full-stack framework for dynamic interfaces
--   **[Filament JSON Field](https://github.com/codebar-ag/filament-json-field)** (v1.4+) - Enhanced JSON input components for Filament
+-   **[Filament JSON Field](https://github.com/codebar-ag/filament-json-field)** (v2.0+) - Laravel Filament JSON Field
 
 ### Frontend
 

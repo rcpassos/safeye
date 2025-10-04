@@ -11,12 +11,13 @@ use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\TransferStats;
+use Psr\Http\Message\ResponseInterface;
 
-final class RunSingleCheck
+final readonly class RunSingleCheck
 {
     public function __construct(
-        private readonly SaveCheckHistory $saveCheckHistory,
-        private readonly EvaluateAssertion $evaluateAssertion
+        private SaveCheckHistory $saveCheckHistory,
+        private EvaluateAssertion $evaluateAssertion
     ) {}
 
     public function handle(Check $check): void
@@ -47,7 +48,7 @@ final class RunSingleCheck
             $client->requestAsync($check->http_method->value, $check->endpoint, $requestOptions)->wait();
 
             // Only handle stats if request was successful
-            if ($statsData) {
+            if ($statsData instanceof TransferStats) {
                 $this->handleRequestStats($statsData, $check);
             }
         } catch (GuzzleException $e) {
@@ -80,7 +81,7 @@ final class RunSingleCheck
             'response_headers' => $response?->getHeaders() ?? [],
             'response_code' => $response?->getStatusCode() ?? 0,
             'response_body' => $response?->getBody()?->getContents() ?? '',
-            'request_body' => $requestBody ?: null,
+            'request_body' => $requestBody !== '' && $requestBody !== '0' ? $requestBody : null,
             'request_headers' => $stats->getRequest()->getHeaders(),
         ];
 
@@ -93,7 +94,7 @@ final class RunSingleCheck
             $this->saveCheckHistory->handle(
                 check: $check,
                 metadata: $metadata,
-                rootCause: $response ? [] : ['error' => 'No response received'],
+                rootCause: $response instanceof ResponseInterface ? [] : ['error' => 'No response received'],
                 type: $type
             );
 

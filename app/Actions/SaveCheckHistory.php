@@ -8,10 +8,10 @@ use App\Enums\CheckHistoryType;
 use App\Models\Check;
 use App\Models\CheckHistory;
 
-final class SaveCheckHistory
+final readonly class SaveCheckHistory
 {
     public function __construct(
-        private readonly NotifyCheckIncident $notifyCheckIncident
+        private NotifyCheckIncident $notifyCheckIncident
     ) {}
 
     public function handle(
@@ -32,7 +32,7 @@ final class SaveCheckHistory
             $type === CheckHistoryType::ERROR &&
             ! empty($check->notify_emails)
         ) {
-            $emails = preg_split("/\r\n|\r|\n/", $check->notify_emails);
+            $emails = preg_split("/\r\n|\r|\n/", (string) $check->notify_emails);
             $this->notifyCheckIncident->handle($emails, $history);
         }
 

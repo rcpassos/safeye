@@ -15,13 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
         // commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware) {
+    ->withMiddleware(function (Middleware $middleware): void {
         //
     })
-    ->withExceptions(function (Exceptions $exceptions) {
+    ->withExceptions(function (Exceptions $exceptions): void {
         //
     })
-    ->withSchedule(function (Schedule $schedule) {
+    ->withSchedule(function (Schedule $schedule): void {
         // $schedule->command(RunCheck::class)->everyMinute();
         $schedule->command('app:clear-old-check-history')
             ->daily()

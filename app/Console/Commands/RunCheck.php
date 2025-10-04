@@ -30,7 +30,7 @@ final class RunCheck extends Command
      */
     public function handle(): void
     {
-        $checks = Check::where('active', true)->get();
+        $checks = Check::query()->where('active', true)->get();
         $runSingleCheck = app(RunSingleCheck::class);
 
         foreach ($checks as $check) {
