@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array<string, mixed> $request_headers
  * @property array<string, mixed>|null $request_body
  * @property string $notify_emails
+ * @property string|null $slack_webhook_url
  * @property bool $active
  * @property \Illuminate\Support\Carbon|null $last_run_at
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -51,6 +52,7 @@ final class Check extends Model
         'request_headers',
         'request_body',
         'notify_emails',
+        'slack_webhook_url',
         'active',
         'last_run_at',
     ];

@@ -29,7 +29,18 @@ final class CheckFactory extends Factory
             'request_headers' => [],
             'request_body' => [],
             'notify_emails' => $this->faker->email(),
+            'slack_webhook_url' => null,
             'active' => true,
         ];
+    }
+
+    /**
+     * Indicate that the check has a Slack webhook configured.
+     */
+    public function withSlack(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'slack_webhook_url' => 'https://hooks.slack.com/services/'.fake()->uuid(),
+        ]);
     }
 }

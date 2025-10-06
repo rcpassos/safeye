@@ -70,6 +70,13 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 - Do not create verification scripts or tinker when tests cover that functionality and prove it works. Unit and feature tests are more important.
 
+## Testing Requirements
+
+- **Always run the full test suite** using `composer test` after completing any request or making changes to the codebase.
+- Ensure all tests pass before considering a task complete.
+- If tests fail, fix the issues before finalizing your response.
+- Running tests helps catch regressions and ensures code quality.
+
 ## Application Structure & Architecture
 
 - Stick to existing directory structure - don't create new base folders without approval.
@@ -755,13 +762,13 @@ document.addEventListener('livewire:init', function () {
 
 - When listing items, use gap utilities for spacing, don't use margins.
 
-        <code-snippet name="Valid Flex Gap Spacing Example" lang="html">
-            <div class="flex gap-8">
-                <div>Superior</div>
-                <div>Michigan</div>
-                <div>Erie</div>
-            </div>
-        </code-snippet>
+          <code-snippet name="Valid Flex Gap Spacing Example" lang="html">
+              <div class="flex gap-8">
+                  <div>Superior</div>
+                  <div>Michigan</div>
+                  <div>Erie</div>
+              </div>
+          </code-snippet>
 
 ### Dark Mode
 

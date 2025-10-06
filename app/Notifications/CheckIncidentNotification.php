@@ -12,6 +12,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Slack\BlockKit\Blocks\ContextBlock;
+use Illuminate\Notifications\Slack\BlockKit\Blocks\SectionBlock;
+use Illuminate\Notifications\Slack\SlackMessage;
 
 final class CheckIncidentNotification extends Notification implements ShouldQueue
 {
@@ -32,23 +35,30 @@ final class CheckIncidentNotification extends Notification implements ShouldQueu
      * - Development: php artisan queue:work
      * - Production: Use Supervisor or Laravel Horizon to manage queue workers
      *
-     * To add Slack notifications:
-     * 1. Install: composer require laravel/slack-notification-channel
-     * 2. Add 'slack' to the via() return array
-     * 3. Implement toSlack() method (see example in docs)
-     * 4. Configure SLACK_WEBHOOK_URL in .env
-     *
      * @return array<int, string>
      */
     public function via(object $notifiable): array
     {
         // If notifiable is a User model, send both mail and database notifications
-        // If it's an on-demand notification, only send mail
         if ($notifiable instanceof \App\Models\User) {
             return ['mail', 'database'];
         }
 
-        return ['mail'];
+        // For on-demand notifications (anonymous notifiable), determine the channel
+        // by checking the routes that were configured
+        $channels = [];
+
+        if (method_exists($notifiable, 'routeNotificationFor')) {
+            if ($notifiable->routeNotificationFor('mail')) {
+                $channels[] = 'mail';
+            }
+            if ($notifiable->routeNotificationFor('slack')) {
+                $channels[] = 'slack';
+            }
+        }
+
+        // Fallback to mail if no specific route is detected
+        return $channels !== [] ? $channels : ['mail'];
     }
 
     /**
@@ -88,6 +98,39 @@ final class CheckIncidentNotification extends Notification implements ShouldQueu
                     ->markAsRead(),
             ])
             ->getDatabaseMessage();
+    }
+
+    /**
+     * Get the Slack representation of the notification.
+     */
+    public function toSlack(object $notifiable): SlackMessage
+    {
+        $check = $this->checkHistory->check;
+        $checkUrl = CheckResource::getUrl('view', ['record' => $check], panel: 'app');
+
+        return (new SlackMessage)
+            ->text(__('notifications.check_incident.subject', ['check_name' => $check->name]))
+            ->headerBlock(__('notifications.check_incident.incident_found'))
+            ->contextBlock(function (ContextBlock $block) use ($check): void {
+                $block->text(__('notifications.check_incident.check_name').': '.$check->name);
+            })
+            ->sectionBlock(function (SectionBlock $block): void {
+                $block->text('*'.__('notifications.check_incident.assertion_failed').'*');
+                $block->field("*Type:*\n".$this->checkHistory->root_cause['type'])->markdown();
+                $block->field("*Condition:*\n".$this->checkHistory->root_cause['sign'].' '.$this->checkHistory->root_cause['value'])->markdown();
+            })
+            ->dividerBlock()
+            ->sectionBlock(function (SectionBlock $block) use ($checkUrl): void {
+                $block->text('<'.$checkUrl.'|'.__('notifications.check_incident.open_in_safeye').'>');
+            });
+    }
+
+    /**
+     * Route notification for the Slack channel.
+     */
+    public function routeNotificationForSlack(object $notifiable): ?string
+    {
+        return $this->checkHistory->check->slack_webhook_url;
     }
 
     /**

@@ -28,6 +28,7 @@ return [
     'request_headers' => 'Request Headers',
     'request_body' => 'Request Body',
     'notify_emails' => 'Notification Emails',
+    'slack_webhook_url' => 'Slack Webhook URL',
     'assertions_section' => 'Assertions',
     'active' => 'Active',
     'created_at' => 'Created At',
@@ -45,6 +46,7 @@ return [
 
     // Helper texts
     'helper_notify_emails' => 'Place one email address per line',
+    'helper_slack_webhook_url' => 'Enter your Slack Incoming Webhook URL from https://api.slack.com/messaging/webhooks',
 
     // Widget labels
     'last_check' => 'LAST CHECK',

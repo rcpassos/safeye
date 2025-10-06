@@ -147,6 +147,11 @@ final class CheckResource extends Resource
                             ->columnSpanFull()
                             ->rows(4)
                             ->helperText(__('checks.helper_notify_emails')),
+                        TextInput::make('slack_webhook_url')
+                            ->label(__('checks.slack_webhook_url'))
+                            ->columnSpanFull()
+                            ->url()
+                            ->helperText(__('checks.helper_slack_webhook_url')),
                     ]),
 
             ]);

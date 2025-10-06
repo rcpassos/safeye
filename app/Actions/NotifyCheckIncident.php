@@ -21,8 +21,14 @@ final class NotifyCheckIncident
         }
 
         // Send email notifications to configured email addresses
-        if (! empty($emails)) {
+        if ($emails !== []) {
             Notification::route('mail', $emails)
+                ->notify($notification);
+        }
+
+        // Send Slack notification if webhook URL is configured
+        if (! empty($check->slack_webhook_url)) {
+            Notification::route('slack', $check->slack_webhook_url)
                 ->notify($notification);
         }
     }
