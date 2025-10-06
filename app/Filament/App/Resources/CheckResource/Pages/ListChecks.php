@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace App\Filament\App\Resources\CheckResource\Pages;
 
 use App\Filament\App\Resources\CheckResource;
+use App\Filament\Exports\CheckExporter;
+use App\Filament\Imports\CheckImporter;
 use App\Models\Check;
 use Filament\Actions;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ImportAction;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -48,6 +53,8 @@ final class ListChecks extends ListRecords
         ])
             ->bulkActions([
                 BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->exporter(CheckExporter::class),
                     DeleteBulkAction::make(),
                 ]),
             ]);
@@ -72,6 +79,10 @@ final class ListChecks extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            ImportAction::make()
+                ->importer(CheckImporter::class),
+            ExportAction::make()
+                ->exporter(CheckExporter::class),
             Actions\CreateAction::make(),
         ];
     }

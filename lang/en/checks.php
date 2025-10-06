@@ -17,6 +17,7 @@ return [
     'alert_settings' => 'Alert Settings',
 
     // Form fields
+    'id' => 'ID',
     'name' => 'Name',
     'group' => 'Group',
     'type' => 'Type',
@@ -29,6 +30,8 @@ return [
     'notify_emails' => 'Notification Emails',
     'assertions_section' => 'Assertions',
     'active' => 'Active',
+    'created_at' => 'Created At',
+    'updated_at' => 'Updated At',
 
     // Suffixes
     'seconds' => 'seconds',
@@ -65,4 +68,10 @@ return [
     // Actions
     'check_executed' => 'Check executed successfully!',
     'check_execution_failed' => 'Failed to execute check: :error',
+
+    // Import/Export
+    'export_completed' => 'Your check export has completed and :count :rows exported.',
+    'export_failed' => ':count :rows failed to export.',
+    'import_completed' => 'Your check import has completed and :count :rows imported.',
+    'import_failed' => ':count :rows failed to import.',
 ];

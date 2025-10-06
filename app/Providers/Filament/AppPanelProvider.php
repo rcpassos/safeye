@@ -70,6 +70,7 @@ final class AppPanelProvider extends PanelProvider
             ->profile(EditProfile::class, isSimple: false)
             ->topNavigation()
             ->maxContentWidth(MaxWidth::Full)
+            ->databaseNotifications()
             ->spa();
     }
 }
