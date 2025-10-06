@@ -9,8 +9,9 @@ use App\Enums\CheckHistoryType;
 use App\Models\Check;
 use App\Models\CheckHistory;
 use App\Models\User;
+use App\Notifications\CheckIncidentNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 final class SaveCheckHistoryActionTest extends TestCase
@@ -49,7 +50,7 @@ final class SaveCheckHistoryActionTest extends TestCase
 
     public function test_sends_notification_when_error_and_emails_configured(): void
     {
-        Mail::fake();
+        Notification::fake();
 
         $user = User::factory()->create();
         $check = Check::factory()->create([
@@ -68,12 +69,12 @@ final class SaveCheckHistoryActionTest extends TestCase
             type: CheckHistoryType::ERROR
         );
 
-        Mail::assertSent(\App\Mail\NotifyCheckIncident::class, 1);
+        Notification::assertSentOnDemand(CheckIncidentNotification::class);
     }
 
     public function test_does_not_send_notification_when_success(): void
     {
-        Mail::fake();
+        Notification::fake();
 
         $user = User::factory()->create();
         $check = Check::factory()->create([
@@ -89,27 +90,31 @@ final class SaveCheckHistoryActionTest extends TestCase
             type: CheckHistoryType::SUCCESS
         );
 
-        Mail::assertNothingSent();
+        Notification::assertNothingSent();
     }
 
-    public function test_does_not_send_notification_when_no_emails_configured(): void
+    public function test_sends_database_notification_even_when_no_emails_configured(): void
     {
-        Mail::fake();
+        Notification::fake();
 
         $user = User::factory()->create();
         $check = Check::factory()->create([
             'user_id' => $user->id,
-            'notify_emails' => '',
+            'notify_emails' => '', // No email addresses configured
         ]);
 
         $action = app(SaveCheckHistory::class);
         $action->handle(
             check: $check,
             metadata: ['error' => 'Failed'],
-            rootCause: [],
+            rootCause: ['type' => 'status_code', 'sign' => '!=', 'value' => '200'],
             type: CheckHistoryType::ERROR
         );
 
-        Mail::assertNothingSent();
+        // Database notification should still be sent to the user
+        Notification::assertSentTo($user, CheckIncidentNotification::class);
+
+        // Only one notification should be sent (to the user, not on-demand)
+        Notification::assertCount(1);
     }
 }

@@ -28,11 +28,16 @@ final readonly class SaveCheckHistory
         $history->notified_emails = $check->notify_emails;
         $history->save();
 
-        if (
-            $type === CheckHistoryType::ERROR &&
-            ! empty($check->notify_emails)
-        ) {
-            $emails = preg_split("/\r\n|\r|\n/", (string) $check->notify_emails);
+        // Send notifications when there's an error
+        if ($type === CheckHistoryType::ERROR) {
+            $emails = [];
+
+            // Parse email addresses if configured
+            if (! empty($check->notify_emails)) {
+                $emails = preg_split("/\r\n|\r|\n/", (string) $check->notify_emails);
+            }
+
+            // Always send notification (database notification to user + optional emails)
             $this->notifyCheckIncident->handle($emails, $history);
         }
 

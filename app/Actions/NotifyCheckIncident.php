@@ -4,14 +4,26 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
-use App\Mail\NotifyCheckIncident as NotifyCheckIncidentMail;
 use App\Models\CheckHistory;
-use Illuminate\Support\Facades\Mail;
+use App\Notifications\CheckIncidentNotification;
+use Illuminate\Support\Facades\Notification;
 
 final class NotifyCheckIncident
 {
     public function handle(array $emails, CheckHistory $checkHistory): void
     {
-        Mail::to($emails)->send(new NotifyCheckIncidentMail($checkHistory));
+        $check = $checkHistory->check;
+        $notification = new CheckIncidentNotification($checkHistory);
+
+        // Send database notification to the check owner
+        if ($check->user) {
+            $check->user->notify($notification);
+        }
+
+        // Send email notifications to configured email addresses
+        if (! empty($emails)) {
+            Notification::route('mail', $emails)
+                ->notify($notification);
+        }
     }
 }
