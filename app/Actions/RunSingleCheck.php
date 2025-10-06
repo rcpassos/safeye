@@ -57,7 +57,11 @@ final readonly class RunSingleCheck
             $this->saveCheckHistory->handle(
                 check: $check,
                 metadata: $metadata,
-                rootCause: ['error' => 'Request failed: '.$e->getMessage()],
+                rootCause: [
+                    'type' => 'Request Error',
+                    'sign' => '',
+                    'value' => $e->getMessage(),
+                ],
                 type: CheckHistoryType::ERROR
             );
         }
@@ -86,10 +90,22 @@ final readonly class RunSingleCheck
                 ? CheckHistoryType::SUCCESS
                 : CheckHistoryType::ERROR;
 
+            $rootCause = $response instanceof ResponseInterface
+                ? [
+                    'type' => 'Response Code',
+                    'sign' => '',
+                    'value' => (string) $response->getStatusCode(),
+                ]
+                : [
+                    'type' => 'Request Error',
+                    'sign' => '',
+                    'value' => 'No response received',
+                ];
+
             $this->saveCheckHistory->handle(
                 check: $check,
                 metadata: $metadata,
-                rootCause: $response instanceof ResponseInterface ? [] : ['error' => 'No response received'],
+                rootCause: $rootCause,
                 type: $type
             );
 
@@ -107,7 +123,11 @@ final readonly class RunSingleCheck
             $this->saveCheckHistory->handle(
                 check: $check,
                 metadata: $metadata,
-                rootCause: $assertion->attributesToArray(),
+                rootCause: [
+                    'type' => $assertion->type->value,
+                    'sign' => $assertion->sign->value,
+                    'value' => $assertion->value,
+                ],
                 type: $success ? CheckHistoryType::SUCCESS : CheckHistoryType::ERROR
             );
         }

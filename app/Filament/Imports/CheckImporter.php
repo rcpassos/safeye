@@ -31,7 +31,7 @@ final class CheckImporter extends Importer
                 ->label(__('checks.group'))
                 ->requiredMapping()
                 ->rules(['required', 'string', 'max:255'])
-                ->fillRecordUsing(function () {
+                ->fillRecordUsing(function (): void {
                     // Group is handled in resolveRecord()
                 }),
             ImportColumn::make('type')
@@ -74,7 +74,7 @@ final class CheckImporter extends Importer
                 ->label(__('checks.assertions'))
                 ->requiredMapping()
                 ->rules(['required', 'json'])
-                ->fillRecordUsing(function () {
+                ->fillRecordUsing(function (): void {
                     // Assertions are handled in resolveRecord()
                 }),
         ];
@@ -84,20 +84,20 @@ final class CheckImporter extends Importer
     {
         $body = __('checks.import_completed', [
             'count' => number_format($import->successful_rows),
-            'rows' => str('row')->plural($import->successful_rows),
+            'rows' => str('row')->plural($import->successful_rows)->toString(),
         ]);
 
-        if ($failedRowsCount = $import->getFailedRowsCount()) {
+        if (($failedRowsCount = $import->getFailedRowsCount()) !== 0) {
             $body .= ' '.__('checks.import_failed', [
                 'count' => number_format($failedRowsCount),
-                'rows' => str('row')->plural($failedRowsCount),
+                'rows' => str('row')->plural($failedRowsCount)->toString(),
             ]);
         }
 
         return $body;
     }
 
-    public function resolveRecord(): ?Check
+    public function resolveRecord(): Check
     {
         // Find or create group for the current user
         $group = Group::query()->firstOrCreate(
@@ -113,10 +113,10 @@ final class CheckImporter extends Importer
 
         // Parse JSON fields if they exist
         $requestHeaders = $this->data['request_headers']
-            ? json_decode($this->data['request_headers'], true)
+            ? json_decode((string) $this->data['request_headers'], true)
             : [];
         $requestBody = $this->data['request_body']
-            ? json_decode($this->data['request_body'], true)
+            ? json_decode((string) $this->data['request_body'], true)
             : null;
 
         // Create the check
@@ -136,7 +136,7 @@ final class CheckImporter extends Importer
         ]);
 
         // Parse and create assertions
-        $assertionsData = json_decode($this->data['assertions_data'], true);
+        $assertionsData = json_decode((string) $this->data['assertions_data'], true);
 
         if (is_array($assertionsData)) {
             foreach ($assertionsData as $assertionData) {

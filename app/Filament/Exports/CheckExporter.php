@@ -48,13 +48,11 @@ final class CheckExporter extends Exporter
             ExportColumn::make('assertions_data')
                 ->label(__('checks.assertions'))
                 ->formatStateUsing(function (Check $record): string {
-                    $assertions = $record->assertions->map(function ($assertion) {
-                        return [
-                            'type' => $assertion->type->value,
-                            'sign' => $assertion->sign->value,
-                            'value' => $assertion->value,
-                        ];
-                    })->toArray();
+                    $assertions = $record->assertions->map(fn ($assertion): array => [
+                        'type' => $assertion->type->value,
+                        'sign' => $assertion->sign->value,
+                        'value' => $assertion->value,
+                    ])->toArray();
 
                     return json_encode($assertions);
                 }),
@@ -69,13 +67,13 @@ final class CheckExporter extends Exporter
     {
         $body = __('checks.export_completed', [
             'count' => number_format($export->successful_rows),
-            'rows' => str('row')->plural($export->successful_rows),
+            'rows' => str('row')->plural($export->successful_rows)->toString(),
         ]);
 
-        if ($failedRowsCount = $export->getFailedRowsCount()) {
+        if (($failedRowsCount = $export->getFailedRowsCount()) !== 0) {
             $body .= ' '.__('checks.export_failed', [
                 'count' => number_format($failedRowsCount),
-                'rows' => str('row')->plural($failedRowsCount),
+                'rows' => str('row')->plural($failedRowsCount)->toString(),
             ]);
         }
 
