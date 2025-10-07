@@ -731,23 +731,93 @@ document.addEventListener('livewire:init', function () {
 - You must run `vendor/bin/pint --dirty` before finalizing changes to ensure your code matches the project's expected style.
 - Do not run `vendor/bin/pint --test`, simply run `vendor/bin/pint` to fix any formatting issues.
 
-=== phpunit/core rules ===
+=== pest/core rules ===
 
-## PHPUnit Core
+## Pest Testing Framework
 
-- This application uses PHPUnit for testing. All tests must be written as PHPUnit classes. Use `php artisan make:test --phpunit <name>` to create a new test.
-- If you see a test using "Pest", convert it to PHPUnit.
-- Every time a test has been updated, run that singular test.
+- This application uses Pest for testing. All tests must be written using Pest syntax. Use `php artisan make:test --pest <name>` to create a new test.
+- Pest is a delightful testing framework with a focus on simplicity. Tests are written using functions rather than classes.
+- Every time a test has been updated, run that singular test using `vendor/bin/pest --filter <testname>`.
 - When the tests relating to your feature are passing, ask the user if they would like to also run the entire test suite to make sure everything is still passing.
 - Tests should test all of the happy paths, failure paths, and weird paths.
 - You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files, these are core to the application.
 
+### Writing Pest Tests
+
+- Use the `test()` function for writing tests with descriptive names.
+- Use `beforeEach()` for test setup instead of `setUp()` methods.
+- Use `expect()` for assertions instead of `$this->assert*()` methods.
+- Tests automatically use `RefreshDatabase` trait when configured in `Pest.php`.
+
 ### Running Tests
 
-- Run the minimal number of tests, using an appropriate filter, before finalizing.
-- To run all tests: `php artisan test`.
-- To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
-- To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
+- Run all tests: `vendor/bin/pest` or `composer test:unit`.
+- Run all tests in a file: `vendor/bin/pest tests/Feature/ExampleTest.php`.
+- Filter on a particular test name: `vendor/bin/pest --filter="test name"` (recommended after making a change to a related file).
+- Run with coverage: `vendor/bin/pest --coverage`.
+
+### Pest Expectations
+
+- Use `expect($value)->toBe()`, `->toBeTrue()`, `->toBeFalse()`, `->toBeNull()`, `->toBeEmpty()`, etc.
+- Use `expect($collection)->toHaveCount()` instead of `assertCount()`.
+- Use `expect($value)->toBeInstanceOf(Class::class)` instead of `assertInstanceOf()`.
+- Laravel assertions like `$this->assertDatabaseHas()` and `$this->actingAs()` still work in Pest.
+
+### Example Pest Test
+
+<code-snippet name="Pest Test Example" lang="php">
+use App\Models\User;
+
+test('user can be created', function () {
+$user = User::factory()->create([
+'name' => 'John Doe',
+]);
+
+    expect($user->name)->toBe('John Doe');
+    $this->assertDatabaseHas('users', [
+        'name' => 'John Doe',
+    ]);
+
+});
+
+test('user can login', function () {
+$user = User::factory()->create();
+
+    $this->actingAs($user);
+
+    $response = $this->get('/dashboard');
+
+    $response->assertStatus(200);
+
+});
+</code-snippet>
+
+<code-snippet name="Pest Test with beforeEach" lang="php">
+use App\Models\User;
+use App\Models\Post;
+
+beforeEach(function () {
+$this->user = User::factory()->create();
+$this->post = Post::factory()->create(['user_id' => $this->user->id]);
+});
+
+test('user can view their own post', function () {
+$this->actingAs($this->user);
+
+    $response = $this->get("/posts/{$this->post->id}");
+
+    $response->assertStatus(200);
+
+});
+</code-snippet>
+
+=== pest/v4 rules ===
+
+## Pest 4
+
+- Pest 4 comes with built-in architecture testing, mutation testing, and profiling capabilities.
+- Use `arch()` for architecture tests to ensure code follows expected patterns.
+- All Pest configuration is in `tests/Pest.php` file.
 
 === tailwindcss/core rules ===
 
@@ -762,13 +832,13 @@ document.addEventListener('livewire:init', function () {
 
 - When listing items, use gap utilities for spacing, don't use margins.
 
-          <code-snippet name="Valid Flex Gap Spacing Example" lang="html">
-              <div class="flex gap-8">
-                  <div>Superior</div>
-                  <div>Michigan</div>
-                  <div>Erie</div>
-              </div>
-          </code-snippet>
+              <code-snippet name="Valid Flex Gap Spacing Example" lang="html">
+                  <div class="flex gap-8">
+                      <div>Superior</div>
+                      <div>Michigan</div>
+                      <div>Erie</div>
+                  </div>
+              </code-snippet>
 
 ### Dark Mode
 

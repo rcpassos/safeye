@@ -2,108 +2,95 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Actions;
-
 use App\Actions\NotifyCheckIncident;
 use App\Models\Check;
 use App\Models\CheckHistory;
 use App\Models\User;
 use App\Notifications\CheckIncidentNotification;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
-use Tests\TestCase;
 
-final class NotifyCheckIncidentActionTest extends TestCase
-{
-    use RefreshDatabase;
+test('sends notification to single recipient', function () {
+    Notification::fake();
 
-    public function test_sends_notification_to_single_recipient(): void
-    {
-        Notification::fake();
+    $user = User::factory()->create();
+    $check = Check::factory()->create(['user_id' => $user->id]);
+    $history = CheckHistory::factory()->create(['check_id' => $check->id]);
 
-        $user = User::factory()->create();
-        $check = Check::factory()->create(['user_id' => $user->id]);
-        $history = CheckHistory::factory()->create(['check_id' => $check->id]);
+    $action = app(NotifyCheckIncident::class);
+    $action->handle(['test@example.com'], $history);
 
-        $action = app(NotifyCheckIncident::class);
-        $action->handle(['test@example.com'], $history);
+    // Database notification sent to check owner
+    Notification::assertSentTo($user, CheckIncidentNotification::class, function ($notification) use ($history) {
+        return $notification->checkHistory->id === $history->id;
+    });
 
-        // Database notification sent to check owner
-        Notification::assertSentTo($user, CheckIncidentNotification::class, function ($notification) use ($history) {
-            return $notification->checkHistory->id === $history->id;
-        });
+    // Email notification sent to configured email
+    Notification::assertSentOnDemand(CheckIncidentNotification::class, function ($notification, $channels, $notifiable) use ($history) {
+        return isset($notifiable->routes['mail']) &&
+               $notifiable->routes['mail'][0] === 'test@example.com' &&
+               $notification->checkHistory->id === $history->id;
+    });
+});
 
-        // Email notification sent to configured email
-        Notification::assertSentOnDemand(CheckIncidentNotification::class, function ($notification, $channels, $notifiable) use ($history) {
-            return isset($notifiable->routes['mail']) &&
-                   $notifiable->routes['mail'][0] === 'test@example.com' &&
-                   $notification->checkHistory->id === $history->id;
-        });
-    }
+test('sends notification to multiple recipients', function () {
+    Notification::fake();
 
-    public function test_sends_notification_to_multiple_recipients(): void
-    {
-        Notification::fake();
+    $user = User::factory()->create();
+    $check = Check::factory()->create(['user_id' => $user->id]);
+    $history = CheckHistory::factory()->create(['check_id' => $check->id]);
 
-        $user = User::factory()->create();
-        $check = Check::factory()->create(['user_id' => $user->id]);
-        $history = CheckHistory::factory()->create(['check_id' => $check->id]);
+    $emails = ['admin@example.com', 'dev@example.com', 'support@example.com'];
 
-        $emails = ['admin@example.com', 'dev@example.com', 'support@example.com'];
+    $action = app(NotifyCheckIncident::class);
+    $action->handle($emails, $history);
 
-        $action = app(NotifyCheckIncident::class);
-        $action->handle($emails, $history);
+    // Database notification sent to check owner
+    Notification::assertSentTo($user, CheckIncidentNotification::class);
 
-        // Database notification sent to check owner
-        Notification::assertSentTo($user, CheckIncidentNotification::class);
-
-        // Email notifications sent to all configured emails
-        Notification::assertSentOnDemand(CheckIncidentNotification::class, function ($notification, $channels, $notifiable) use ($emails) {
-            if (! isset($notifiable->routes['mail'])) {
-                return false;
-            }
-
-            foreach ($emails as $email) {
-                if (in_array($email, $notifiable->routes['mail'])) {
-                    return true;
-                }
-            }
-
+    // Email notifications sent to all configured emails
+    Notification::assertSentOnDemand(CheckIncidentNotification::class, function ($notification, $channels, $notifiable) use ($emails) {
+        if (! isset($notifiable->routes['mail'])) {
             return false;
-        });
-    }
+        }
 
-    public function test_sends_via_mail_and_database_channels_to_user(): void
-    {
-        Notification::fake();
+        foreach ($emails as $email) {
+            if (in_array($email, $notifiable->routes['mail'])) {
+                return true;
+            }
+        }
 
-        $user = User::factory()->create();
-        $check = Check::factory()->create(['user_id' => $user->id]);
-        $history = CheckHistory::factory()->create(['check_id' => $check->id]);
+        return false;
+    });
+});
 
-        $action = app(NotifyCheckIncident::class);
-        $action->handle(['test@example.com'], $history);
+test('sends via mail and database channels to user', function () {
+    Notification::fake();
 
-        // Check that user receives both mail and database notifications
-        Notification::assertSentTo($user, CheckIncidentNotification::class, function ($notification, $channels) {
-            return in_array('mail', $channels) && in_array('database', $channels);
-        });
-    }
+    $user = User::factory()->create();
+    $check = Check::factory()->create(['user_id' => $user->id]);
+    $history = CheckHistory::factory()->create(['check_id' => $check->id]);
 
-    public function test_sends_only_mail_for_on_demand_notifications(): void
-    {
-        Notification::fake();
+    $action = app(NotifyCheckIncident::class);
+    $action->handle(['test@example.com'], $history);
 
-        $user = User::factory()->create();
-        $check = Check::factory()->create(['user_id' => $user->id]);
-        $history = CheckHistory::factory()->create(['check_id' => $check->id]);
+    // Check that user receives both mail and database notifications
+    Notification::assertSentTo($user, CheckIncidentNotification::class, function ($notification, $channels) {
+        return in_array('mail', $channels) && in_array('database', $channels);
+    });
+});
 
-        $action = app(NotifyCheckIncident::class);
-        $action->handle(['external@example.com'], $history);
+test('sends only mail for on demand notifications', function () {
+    Notification::fake();
 
-        // Check that on-demand notifications only use mail channel
-        Notification::assertSentOnDemand(CheckIncidentNotification::class, function ($notification, $channels) {
-            return in_array('mail', $channels) && ! in_array('database', $channels);
-        });
-    }
-}
+    $user = User::factory()->create();
+    $check = Check::factory()->create(['user_id' => $user->id]);
+    $history = CheckHistory::factory()->create(['check_id' => $check->id]);
+
+    $action = app(NotifyCheckIncident::class);
+    $action->handle(['external@example.com'], $history);
+
+    // Check that on-demand notifications only use mail channel
+    Notification::assertSentOnDemand(CheckIncidentNotification::class, function ($notification, $channels) {
+        return in_array('mail', $channels) && ! in_array('database', $channels);
+    });
+});

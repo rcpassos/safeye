@@ -49,7 +49,7 @@ final class CheckHistory extends Model
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    public function casts(): array
     {
         return [
             'metadata' => 'array',

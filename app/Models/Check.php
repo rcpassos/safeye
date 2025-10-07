@@ -105,7 +105,7 @@ final class Check extends Model
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    public function casts(): array
     {
         return [
             'http_method' => HTTPMethod::class,

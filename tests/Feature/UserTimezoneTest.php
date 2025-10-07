@@ -2,68 +2,54 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
-
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-final class UserTimezoneTest extends TestCase
-{
-    use RefreshDatabase;
+test('user can have timezone', function () {
+    $user = User::factory()->create([
+        'timezone' => 'America/New_York',
+    ]);
 
-    public function test_user_can_have_timezone(): void
-    {
-        $user = User::factory()->create([
-            'timezone' => 'America/New_York',
-        ]);
+    expect($user->timezone)->toBe('America/New_York');
+});
 
-        $this->assertEquals('America/New_York', $user->timezone);
-    }
+test('new user defaults to utc', function () {
+    $user = User::factory()->create();
 
-    public function test_new_user_defaults_to_utc(): void
-    {
-        $user = User::factory()->create();
+    expect($user->timezone)->toBe('UTC');
+});
 
-        $this->assertEquals('UTC', $user->timezone);
-    }
+test('middleware sets application timezone', function () {
+    /** @var User $user */
+    $user = User::factory()->create([
+        'timezone' => 'America/Los_Angeles',
+    ]);
 
-    public function test_middleware_sets_application_timezone(): void
-    {
-        /** @var User $user */
-        $user = User::factory()->create([
-            'timezone' => 'America/Los_Angeles',
-        ]);
+    $this->actingAs($user);
 
-        $this->actingAs($user);
+    $this->get('/app');
 
-        $this->get('/app');
+    expect(config('app.timezone'))->toBe('America/Los_Angeles');
+});
 
-        $this->assertEquals('America/Los_Angeles', config('app.timezone'));
-    }
+test('application timezone remains utc for guests', function () {
+    $this->get('/');
 
-    public function test_application_timezone_remains_utc_for_guests(): void
-    {
-        $this->get('/');
+    expect(config('app.timezone'))->toBe('UTC');
+});
 
-        $this->assertEquals('UTC', config('app.timezone'));
-    }
+test('user can update timezone in profile', function () {
+    /** @var User $user */
+    $user = User::factory()->create([
+        'timezone' => 'UTC',
+    ]);
 
-    public function test_user_can_update_timezone_in_profile(): void
-    {
-        /** @var User $user */
-        $user = User::factory()->create([
-            'timezone' => 'UTC',
-        ]);
+    $this->actingAs($user);
 
-        $this->actingAs($user);
+    // Simulate updating the profile with a new timezone
+    $user->update(['timezone' => 'America/Chicago']);
 
-        // Simulate updating the profile with a new timezone
-        $user->update(['timezone' => 'America/Chicago']);
+    // After update, middleware should apply the new timezone
+    $this->get('/app');
 
-        // After update, middleware should apply the new timezone
-        $this->get('/app');
-
-        $this->assertEquals('America/Chicago', $user->fresh()->timezone);
-    }
-}
+    expect($user->fresh()->timezone)->toBe('America/Chicago');
+});

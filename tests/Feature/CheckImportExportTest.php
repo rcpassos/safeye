@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature;
-
 use App\Enums\AssertionSign;
 use App\Enums\AssertionType;
 use App\Enums\CheckType;
@@ -14,202 +12,181 @@ use App\Models\Assertion;
 use App\Models\Check;
 use App\Models\Group;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-final class CheckImportExportTest extends TestCase
-{
-    use RefreshDatabase;
+beforeEach(function () {
+    $this->user = User::factory()->create();
+    $this->group = Group::factory()->create([
+        'user_id' => $this->user->id,
+        'name' => 'Test Group',
+    ]);
+});
 
-    private User $user;
+test('exported csv contains correct columns', function () {
+    $columns = CheckExporter::getColumns();
 
-    private Group $group;
+    $expectedColumns = [
+        'id',
+        'name',
+        'group.name',
+        'type',
+        'endpoint',
+        'http_method',
+        'interval',
+        'request_timeout',
+        'request_headers',
+        'request_body',
+        'notify_emails',
+        'active',
+        'assertions_data',
+        'created_at',
+        'updated_at',
+    ];
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->user = User::factory()->create();
-        $this->group = Group::factory()->create([
-            'user_id' => $this->user->id,
-            'name' => 'Test Group',
-        ]);
+    foreach ($expectedColumns as $expectedColumn) {
+        $found = collect($columns)->contains(fn ($column) => $column->getName() === $expectedColumn);
+        expect($found)->toBeTrue("Column '{$expectedColumn}' not found in exporter");
     }
 
-    public function test_exported_csv_contains_correct_columns(): void
-    {
-        $columns = CheckExporter::getColumns();
+    expect($columns)->toHaveCount(count($expectedColumns));
+});
 
-        $expectedColumns = [
-            'id',
-            'name',
-            'group.name',
-            'type',
-            'endpoint',
-            'http_method',
-            'interval',
-            'request_timeout',
-            'request_headers',
-            'request_body',
-            'notify_emails',
-            'active',
-            'assertions_data',
-            'created_at',
-            'updated_at',
+test('importer contains required columns', function () {
+    $columns = CheckImporter::getColumns();
+
+    $expectedColumns = [
+        'name',
+        'group',
+        'type',
+        'endpoint',
+        'http_method',
+        'interval',
+        'request_timeout',
+        'notify_emails',
+        'active',
+        'assertions_data',
+        'request_headers',
+        'request_body',
+    ];
+
+    foreach ($expectedColumns as $expectedColumn) {
+        $found = collect($columns)->contains(fn ($column) => $column->getName() === $expectedColumn);
+        expect($found)->toBeTrue("Column '{$expectedColumn}' not found in importer");
+    }
+
+    expect($columns)->toHaveCount(count($expectedColumns));
+});
+
+test('exporter formats enum values correctly', function () {
+    expect(CheckType::HTTP->value)->toBe('http');
+    expect(HTTPMethod::GET->value)->toBe('GET');
+    expect(HTTPMethod::POST->value)->toBe('POST');
+    expect(AssertionSign::EQUAL->value)->toBe('eq');
+    expect(AssertionSign::NOT_EQUAL->value)->toBe('neq');
+});
+
+test('check with assertions can be exported', function () {
+    $this->actingAs($this->user);
+
+    $check = Check::factory()->create([
+        'user_id' => $this->user->id,
+        'group_id' => $this->group->id,
+        'name' => 'Export Test Check',
+        'type' => CheckType::HTTP,
+        'endpoint' => 'https://example.com',
+        'http_method' => HTTPMethod::GET,
+        'interval' => 60,
+        'request_timeout' => 10,
+        'request_headers' => ['Authorization' => 'Bearer token'],
+        'request_body' => ['key' => 'value'],
+        'notify_emails' => 'test@example.com',
+        'active' => true,
+    ]);
+
+    Assertion::factory()->create([
+        'check_id' => $check->id,
+        'type' => AssertionType::RESPONSE_CODE,
+        'sign' => AssertionSign::EQUAL,
+        'value' => '200',
+    ]);
+
+    Assertion::factory()->create([
+        'check_id' => $check->id,
+        'type' => AssertionType::RESPONSE_TIME,
+        'sign' => AssertionSign::LESS_THAN,
+        'value' => '1000',
+    ]);
+
+    // Verify the check was created with assertions
+    $this->assertDatabaseHas('checks', [
+        'name' => 'Export Test Check',
+        'endpoint' => 'https://example.com',
+    ]);
+
+    expect($check->assertions()->count())->toBe(2);
+});
+
+test('assertions data structure', function () {
+    $this->actingAs($this->user);
+
+    $check = Check::factory()->create([
+        'user_id' => $this->user->id,
+        'group_id' => $this->group->id,
+    ]);
+
+    Assertion::factory()->create([
+        'check_id' => $check->id,
+        'type' => AssertionType::RESPONSE_CODE,
+        'sign' => AssertionSign::EQUAL,
+        'value' => '200',
+    ]);
+
+    Assertion::factory()->create([
+        'check_id' => $check->id,
+        'type' => AssertionType::RESPONSE_TIME,
+        'sign' => AssertionSign::LESS_THAN,
+        'value' => '1000',
+    ]);
+
+    $check = $check->fresh(['assertions']);
+
+    $assertions = $check->assertions->map(function ($assertion) {
+        return [
+            'type' => $assertion->type->value,
+            'sign' => $assertion->sign->value,
+            'value' => $assertion->value,
         ];
+    })->toArray();
 
-        foreach ($expectedColumns as $expectedColumn) {
-            $found = collect($columns)->contains(fn ($column) => $column->getName() === $expectedColumn);
-            $this->assertTrue($found, "Column '{$expectedColumn}' not found in exporter");
-        }
+    $json = json_encode($assertions);
+    $decoded = json_decode($json, true);
 
-        $this->assertCount(count($expectedColumns), $columns);
-    }
+    expect($decoded)->toBeArray();
+    expect($decoded)->toHaveCount(2);
+    expect($decoded[0]['type'])->toBe('response.code');
+    expect($decoded[0]['sign'])->toBe('eq');
+    expect($decoded[0]['value'])->toBe('200');
+    expect($decoded[1]['type'])->toBe('response.time');
+    expect($decoded[1]['sign'])->toBe('lt');
+    expect($decoded[1]['value'])->toBe('1000');
+});
 
-    public function test_importer_contains_required_columns(): void
-    {
-        $columns = CheckImporter::getColumns();
+test('importer columns have validation rules', function () {
+    $columns = CheckImporter::getColumns();
 
-        $expectedColumns = [
-            'name',
-            'group',
-            'type',
-            'endpoint',
-            'http_method',
-            'interval',
-            'request_timeout',
-            'notify_emails',
-            'active',
-            'assertions_data',
-            'request_headers',
-            'request_body',
-        ];
+    $nameColumn = collect($columns)->first(fn ($column) => $column->getName() === 'name');
+    expect($nameColumn)->not->toBeNull();
 
-        foreach ($expectedColumns as $expectedColumn) {
-            $found = collect($columns)->contains(fn ($column) => $column->getName() === $expectedColumn);
-            $this->assertTrue($found, "Column '{$expectedColumn}' not found in importer");
-        }
+    $endpointColumn = collect($columns)->first(fn ($column) => $column->getName() === 'endpoint');
+    expect($endpointColumn)->not->toBeNull();
 
-        $this->assertCount(count($expectedColumns), $columns);
-    }
+    $intervalColumn = collect($columns)->first(fn ($column) => $column->getName() === 'interval');
+    expect($intervalColumn)->not->toBeNull();
+});
 
-    public function test_exporter_formats_enum_values_correctly(): void
-    {
-        $this->assertEquals('http', CheckType::HTTP->value);
-        $this->assertEquals('GET', HTTPMethod::GET->value);
-        $this->assertEquals('POST', HTTPMethod::POST->value);
-        $this->assertEquals('eq', AssertionSign::EQUAL->value);
-        $this->assertEquals('neq', AssertionSign::NOT_EQUAL->value);
-    }
+test('exporter includes group relationship', function () {
+    $columns = CheckExporter::getColumns();
 
-    public function test_check_with_assertions_can_be_exported(): void
-    {
-        $this->actingAs($this->user);
+    $groupColumn = collect($columns)->first(fn ($column) => $column->getName() === 'group.name');
 
-        $check = Check::factory()->create([
-            'user_id' => $this->user->id,
-            'group_id' => $this->group->id,
-            'name' => 'Export Test Check',
-            'type' => CheckType::HTTP,
-            'endpoint' => 'https://example.com',
-            'http_method' => HTTPMethod::GET,
-            'interval' => 60,
-            'request_timeout' => 10,
-            'request_headers' => ['Authorization' => 'Bearer token'],
-            'request_body' => ['key' => 'value'],
-            'notify_emails' => 'test@example.com',
-            'active' => true,
-        ]);
-
-        Assertion::factory()->create([
-            'check_id' => $check->id,
-            'type' => AssertionType::RESPONSE_CODE,
-            'sign' => AssertionSign::EQUAL,
-            'value' => '200',
-        ]);
-
-        Assertion::factory()->create([
-            'check_id' => $check->id,
-            'type' => AssertionType::RESPONSE_TIME,
-            'sign' => AssertionSign::LESS_THAN,
-            'value' => '1000',
-        ]);
-
-        // Verify the check was created with assertions
-        $this->assertDatabaseHas('checks', [
-            'name' => 'Export Test Check',
-            'endpoint' => 'https://example.com',
-        ]);
-
-        $this->assertEquals(2, $check->assertions()->count());
-    }
-
-    public function test_assertions_data_structure(): void
-    {
-        $this->actingAs($this->user);
-
-        $check = Check::factory()->create([
-            'user_id' => $this->user->id,
-            'group_id' => $this->group->id,
-        ]);
-
-        Assertion::factory()->create([
-            'check_id' => $check->id,
-            'type' => AssertionType::RESPONSE_CODE,
-            'sign' => AssertionSign::EQUAL,
-            'value' => '200',
-        ]);
-
-        Assertion::factory()->create([
-            'check_id' => $check->id,
-            'type' => AssertionType::RESPONSE_TIME,
-            'sign' => AssertionSign::LESS_THAN,
-            'value' => '1000',
-        ]);
-
-        $check = $check->fresh(['assertions']);
-
-        $assertions = $check->assertions->map(function ($assertion) {
-            return [
-                'type' => $assertion->type->value,
-                'sign' => $assertion->sign->value,
-                'value' => $assertion->value,
-            ];
-        })->toArray();
-
-        $json = json_encode($assertions);
-        $decoded = json_decode($json, true);
-
-        $this->assertIsArray($decoded);
-        $this->assertCount(2, $decoded);
-        $this->assertEquals('response.code', $decoded[0]['type']);
-        $this->assertEquals('eq', $decoded[0]['sign']);
-        $this->assertEquals('200', $decoded[0]['value']);
-        $this->assertEquals('response.time', $decoded[1]['type']);
-        $this->assertEquals('lt', $decoded[1]['sign']);
-        $this->assertEquals('1000', $decoded[1]['value']);
-    }
-
-    public function test_importer_columns_have_validation_rules(): void
-    {
-        $columns = CheckImporter::getColumns();
-
-        $nameColumn = collect($columns)->first(fn ($column) => $column->getName() === 'name');
-        $this->assertNotNull($nameColumn);
-
-        $endpointColumn = collect($columns)->first(fn ($column) => $column->getName() === 'endpoint');
-        $this->assertNotNull($endpointColumn);
-
-        $intervalColumn = collect($columns)->first(fn ($column) => $column->getName() === 'interval');
-        $this->assertNotNull($intervalColumn);
-    }
-
-    public function test_exporter_includes_group_relationship(): void
-    {
-        $columns = CheckExporter::getColumns();
-
-        $groupColumn = collect($columns)->first(fn ($column) => $column->getName() === 'group.name');
-
-        $this->assertNotNull($groupColumn, 'group.name column should exist in exporter');
-    }
-}
+    expect($groupColumn)->not->toBeNull('group.name column should exist in exporter');
+});
