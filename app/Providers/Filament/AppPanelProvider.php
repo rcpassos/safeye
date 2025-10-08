@@ -25,6 +25,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Stephenjude\FilamentTwoFactorAuthentication\TwoFactorAuthenticationPlugin;
 
 final class AppPanelProvider extends PanelProvider
 {
@@ -74,8 +75,8 @@ final class AppPanelProvider extends PanelProvider
             ->maxContentWidth(MaxWidth::Full)
             ->databaseNotifications()
             ->spa()
-            ->plugin(
-                FilamentSocialitePlugin::make()
+            ->plugins(
+                [FilamentSocialitePlugin::make()
                     // (required) Add providers corresponding with providers in `config/services.php`.
                     ->providers([
                         // Create a provider 'github' corresponding to the Socialite driver with the same name.
@@ -95,7 +96,10 @@ final class AppPanelProvider extends PanelProvider
                             ->scopes(['openid', 'profile', 'email']),
                     ])
                     ->registration(true)
-                    ->slug('app')
+                    ->slug('app'),
+                    TwoFactorAuthenticationPlugin::make()
+                        ->addTwoFactorMenuItem(),
+                ],
             );
     }
 }
