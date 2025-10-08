@@ -184,12 +184,12 @@ test('dashboard defaults to 30 days', function () {
         ->assertSet('filters.dateRange', '30d');
 });
 
-test('response time chart displays performance data', function () {
+test('check history chart displays check data', function () {
     /** @var User $user */
     $user = User::factory()->create();
     $check = Check::factory()->create(['user_id' => $user->id]);
 
-    // Create check history with transfer time metadata
+    // Create check history
     CheckHistory::factory()->create([
         'check_id' => $check->id,
         'type' => CheckHistoryType::SUCCESS,

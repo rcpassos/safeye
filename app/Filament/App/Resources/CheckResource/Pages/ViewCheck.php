@@ -6,6 +6,7 @@ namespace App\Filament\App\Resources\CheckResource\Pages;
 
 use App\Actions\RunSingleCheck;
 use App\Enums\CheckHistoryType;
+use App\Enums\CheckType;
 use App\Filament\App\Resources\CheckResource;
 use App\Filament\App\Resources\CheckResource\Widgets\CheckStats;
 use App\Models\Check;
@@ -40,7 +41,11 @@ final class ViewCheck extends ViewRecord
         /** @var Check $check */
         $check = $this->getRecord();
 
-        $httpMethod = $check->http_method->value;
+        if ($check->type === CheckType::PING) {
+            return "PING {$check->endpoint}";
+        }
+
+        $httpMethod = mb_strtoupper($check->config['method'] ?? 'GET');
         $endpoint = $check->endpoint;
 
         return "$httpMethod $endpoint";
@@ -117,10 +122,17 @@ final class ViewCheck extends ViewRecord
                                 ->formatStateUsing(fn (string $state): string => __('checks.every_seconds', ['seconds' => $state])),
                             TextEntry::make('type'),
                         ])->columns(2),
-                        TextEntry::make('request_timeout')
-                            ->formatStateUsing(fn (string $state): string => __('checks.value_seconds', ['value' => $state])),
-                        KeyValueEntry::make('request_headers'),
-                        JsonEntry::make('request_body')
+
+                        // HTTP-specific fields
+                        TextEntry::make('config.timeout')
+                            ->label(__('checks.request_timeout'))
+                            ->formatStateUsing(fn ($state): string => __('checks.value_seconds', ['value' => $state]))
+                            ->visible(fn (Check $record): bool => $record->type === CheckType::HTTP),
+                        KeyValueEntry::make('config.headers')
+                            ->label(__('checks.request_headers'))
+                            ->visible(fn (Check $record): bool => $record->type === CheckType::HTTP),
+                        JsonEntry::make('config.body')
+                            ->label(__('checks.request_body'))
                             ->key('request_body')
                             ->columnSpanFull()
                             ->lineNumbers(true)
@@ -128,7 +140,19 @@ final class ViewCheck extends ViewRecord
                             ->autoCloseBrackets(true)
                             ->darkTheme(true)
                             ->foldingCode(false)
-                            ->foldedCode(false),
+                            ->foldedCode(false)
+                            ->visible(fn (Check $record): bool => $record->type === CheckType::HTTP),
+
+                        // PING-specific fields
+                        Grid::make(2)->schema([
+                            TextEntry::make('config.count')
+                                ->label(__('checks.ping_count'))
+                                ->formatStateUsing(fn ($state): string => __('checks.value_packets', ['value' => $state])),
+                            TextEntry::make('config.timeout')
+                                ->label(__('checks.ping_timeout'))
+                                ->formatStateUsing(fn ($state): string => __('checks.value_seconds', ['value' => $state])),
+                        ])->visible(fn (Check $record): bool => $record->type === CheckType::PING),
+
                         RepeatableEntry::make('assertions')
                             ->schema([
                                 TextEntry::make('type'),

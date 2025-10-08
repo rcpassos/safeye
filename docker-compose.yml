@@ -21,6 +21,9 @@ services:
             - ".:/var/www/html"
         networks:
             - sail
+        cap_add:
+            - NET_RAW
+            - NET_ADMIN
         depends_on:
             - mysql
             # - redis

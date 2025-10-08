@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Enums\CheckHistoryType;
 use App\Enums\CheckType;
-use App\Enums\HTTPMethod;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,11 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property CheckType $type
  * @property string $endpoint
- * @property HTTPMethod $http_method
  * @property int $interval
- * @property int $request_timeout
- * @property array<string, mixed> $request_headers
- * @property array<string, mixed>|null $request_body
+ * @property array<string, mixed> $config
  * @property string $notify_emails
  * @property string|null $slack_webhook_url
  * @property bool $active
@@ -46,11 +42,8 @@ final class Check extends Model
         'name',
         'type',
         'endpoint',
-        'http_method',
         'interval',
-        'request_timeout',
-        'request_headers',
-        'request_body',
+        'config',
         'notify_emails',
         'slack_webhook_url',
         'active',
@@ -108,11 +101,9 @@ final class Check extends Model
     public function casts(): array
     {
         return [
-            'http_method' => HTTPMethod::class,
             'type' => CheckType::class,
             'active' => 'boolean',
-            'request_headers' => 'array',
-            'request_body' => 'array',
+            'config' => 'array',
             'last_run_at' => 'datetime',
         ];
     }

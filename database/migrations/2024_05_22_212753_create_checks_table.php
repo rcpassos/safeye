@@ -22,14 +22,12 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
             $table->string('name');
-            $table->enum('type', ['http']);
+            $table->enum('type', ['http', 'ping']);
             $table->string('endpoint');
-            $table->enum('http_method', ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'])->nullable();
             $table->unsignedBigInteger('interval')->default(60);
-            $table->unsignedBigInteger('request_timeout')->default(10);
-            $table->json('request_headers')->nullable();
-            $table->json('request_body')->nullable();
+            $table->json('config')->nullable();
             $table->text('notify_emails')->nullable();
+            $table->string('slack_webhook_url')->nullable();
             $table->boolean('active')->default(true);
             $table->timestamp('last_run_at')->nullable();
             $table->timestamps();

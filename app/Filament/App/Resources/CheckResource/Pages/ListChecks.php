@@ -34,14 +34,13 @@ final class ListChecks extends ListRecords
                 ->sortable()
                 ->searchable(),
             TextColumn::make('type')
+                ->badge()
                 ->sortable()
                 ->searchable(),
             TextColumn::make('endpoint')
                 ->sortable()
-                ->searchable(),
-            TextColumn::make('http_method')
-                ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->limit(50),
             TextColumn::make('interval')
                 ->suffix(' seconds')
                 ->sortable(),
@@ -63,11 +62,20 @@ final class ListChecks extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make()->badge(Check::query()->count()),
+            'all' => Tab::make()
+                ->badge(Check::query()->count()),
             'active' => Tab::make()
+                ->badge(Check::query()->where('active', true)->count())
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('active', true)),
             'inactive' => Tab::make()
+                ->badge(Check::query()->where('active', false)->count())
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('active', false)),
+            'http' => Tab::make('HTTP')
+                ->badge(Check::query()->where('type', 'http')->count())
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'http')),
+            'ping' => Tab::make('PING')
+                ->badge(Check::query()->where('type', 'ping')->count())
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('type', 'ping')),
         ];
     }
 

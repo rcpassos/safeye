@@ -21,7 +21,9 @@ return [
     'widgets' => [
         'check_history' => 'Check History',
         'stats_overview' => 'Stats Overview',
-        'response_time_trend' => 'Response Time Trend',
+        'uptime_trend' => 'Uptime Trend',
+        'checks_by_type' => 'Checks by Type',
+        'success_rate' => 'Success vs Error Rate',
     ],
 
     // Stats
@@ -48,8 +50,6 @@ return [
     'chart' => [
         'successful_checks' => 'Successful Checks',
         'failed_checks' => 'Failed Checks',
-        'avg_response_time' => 'Average',
-        'max_response_time' => 'Maximum',
-        'response_time_ms' => 'Response Time (ms)',
+        'uptime_percentage' => 'Uptime %',
     ],
 ];

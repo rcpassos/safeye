@@ -49,15 +49,6 @@ final class CheckStatsOverview extends BaseWidget
             ? round((($checksInRange - $failedChecksInRange) / $checksInRange) * 100, 1)
             : 100;
 
-        $avgResponseTime = CheckHistory::query()
-            ->whereHas('check', function ($query) use ($userId): void {
-                $query->where('user_id', $userId);
-            })
-            ->when($startDate, fn ($query) => $query->where('created_at', '>=', $startDate))
-            ->when($endDate, fn ($query) => $query->where('created_at', '<=', $endDate))
-            ->whereNotNull('metadata->transfer_time')
-            ->avg('metadata->transfer_time');
-
         $rangeLabel = $this->getRangeLabel();
 
         return [
@@ -75,11 +66,6 @@ final class CheckStatsOverview extends BaseWidget
                 ->description($rangeLabel)
                 ->descriptionIcon('heroicon-m-chart-bar')
                 ->color($successRate >= 95 ? 'success' : ($successRate >= 80 ? 'warning' : 'danger')),
-
-            Stat::make(__('dashboard.stats.avg_response_time'), $avgResponseTime ? round($avgResponseTime, 0).'ms' : __('dashboard.stats.n_a'))
-                ->description($rangeLabel)
-                ->descriptionIcon('heroicon-m-clock')
-                ->color('info'),
         ];
     }
 

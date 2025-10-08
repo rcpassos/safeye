@@ -6,6 +6,7 @@ use App\Actions\RunSingleCheck;
 use App\Enums\AssertionSign;
 use App\Enums\AssertionType;
 use App\Enums\CheckHistoryType;
+use App\Enums\CheckType;
 use App\Models\Assertion;
 use App\Models\Check;
 use App\Models\CheckHistory;
@@ -16,7 +17,8 @@ test('can run single check action', function () {
     $user = User::factory()->create();
     $check = Check::factory()->create([
         'user_id' => $user->id,
-        'endpoint' => 'https://httpbin.org/status/200',
+        'type' => CheckType::HTTP,
+        'endpoint' => 'https://example.com',
         'active' => true,
     ]);
 
@@ -31,10 +33,7 @@ test('can run single check action', function () {
     $this->assertDatabaseCount('check_history', 0);
 
     // Run the action
-    $action = new RunSingleCheck(
-        app(App\Actions\SaveCheckHistory::class),
-        app(App\Actions\EvaluateAssertion::class)
-    );
+    $action = app(RunSingleCheck::class);
     $action->handle($check);
 
     // Assert check history was created (even with no assertions)
@@ -59,6 +58,7 @@ test('check execution handles request failure', function () {
     $user = User::factory()->create();
     $check = Check::factory()->create([
         'user_id' => $user->id,
+        'type' => CheckType::HTTP,
         'endpoint' => 'https://invalid-domain-that-does-not-exist.com',
         'notify_emails' => '', // No email notifications for this test
         'active' => true,
@@ -67,10 +67,7 @@ test('check execution handles request failure', function () {
     $this->assertDatabaseCount('check_history', 0);
 
     // Run the action
-    $action = new RunSingleCheck(
-        app(App\Actions\SaveCheckHistory::class),
-        app(App\Actions\EvaluateAssertion::class)
-    );
+    $action = app(RunSingleCheck::class);
     $action->handle($check);
 
     // Assert check history was created even for failed requests

@@ -93,11 +93,13 @@ test('check with assertions can be exported', function () {
         'name' => 'Export Test Check',
         'type' => CheckType::HTTP,
         'endpoint' => 'https://example.com',
-        'http_method' => HTTPMethod::GET,
         'interval' => 60,
-        'request_timeout' => 10,
-        'request_headers' => ['Authorization' => 'Bearer token'],
-        'request_body' => ['key' => 'value'],
+        'config' => [
+            'method' => HTTPMethod::GET->value,
+            'timeout' => 10,
+            'headers' => ['Authorization' => 'Bearer token'],
+            'body' => ['key' => 'value'],
+        ],
         'notify_emails' => 'test@example.com',
         'active' => true,
     ]);

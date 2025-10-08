@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\App\Pages;
 
 use App\Filament\App\Widgets\CheckHistoryChart;
+use App\Filament\App\Widgets\ChecksByTypeChart;
 use App\Filament\App\Widgets\CheckStatsOverview;
-use App\Filament\App\Widgets\ResponseTimeChart;
+use App\Filament\App\Widgets\SuccessRateChart;
+use App\Filament\App\Widgets\UptimeTrendChart;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -65,7 +67,9 @@ final class Dashboard extends BaseDashboard
         return [
             CheckStatsOverview::class,
             CheckHistoryChart::class,
-            ResponseTimeChart::class,
+            UptimeTrendChart::class,
+            ChecksByTypeChart::class,
+            SuccessRateChart::class,
         ];
     }
 
