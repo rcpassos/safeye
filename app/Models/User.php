@@ -16,7 +16,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string $name
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property string $password
+ * @property string|null $password
  * @property bool $is_admin
  * @property string $timezone
  * @property string|null $remember_token

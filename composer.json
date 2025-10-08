@@ -10,11 +10,13 @@
     "require": {
         "php": "^8.3",
         "codebar-ag/laravel-filament-json-field": "^2.0",
+        "dutchcodingcompany/filament-socialite": "^2.4",
         "filament/filament": "^3.2",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^11.0",
         "laravel/slack-notification-channel": "^3.6",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "owenvoke/blade-fontawesome": "^2.9"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.0",

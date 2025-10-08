@@ -8,6 +8,8 @@ use App\Filament\App\Pages\Auth\EditProfile;
 use App\Filament\App\Pages\Auth\Register;
 use App\Filament\App\Pages\Dashboard;
 use App\Http\Middleware\SetUserTimezone;
+use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
+use DutchCodingCompany\FilamentSocialite\Provider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -71,6 +73,29 @@ final class AppPanelProvider extends PanelProvider
             ->topNavigation()
             ->maxContentWidth(MaxWidth::Full)
             ->databaseNotifications()
-            ->spa();
+            ->spa()
+            ->plugin(
+                FilamentSocialitePlugin::make()
+                    // (required) Add providers corresponding with providers in `config/services.php`.
+                    ->providers([
+                        // Create a provider 'github' corresponding to the Socialite driver with the same name.
+                        Provider::make('github')
+                            ->label('GitHub')
+                            ->icon('fab-github')
+                            ->color(Color::hex('#333333'))
+                            ->outlined(false)
+                            ->stateless(false)
+                            ->scopes(['read:user', 'user:email']),
+                        Provider::make('google')
+                            ->label('Google')
+                            ->icon('fab-google')
+                            ->color(Color::hex('#4285F4'))
+                            ->outlined(false)
+                            ->stateless(false)
+                            ->scopes(['openid', 'profile', 'email']),
+                    ])
+                    ->registration(true)
+                    ->slug('app')
+            );
     }
 }

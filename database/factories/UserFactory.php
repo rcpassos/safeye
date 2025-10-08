@@ -44,4 +44,14 @@ final class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /**
+     * Indicate that the user registered via social login (no password).
+     */
+    public function withoutPassword(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'password' => null,
+        ]);
+    }
 }
